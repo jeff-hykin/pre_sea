@@ -1,0 +1,1 @@
+export const replacementId = (prefix)=>`${prefix}${Math.random()}`.replace(".", "")

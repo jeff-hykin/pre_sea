@@ -1,6 +1,18 @@
 import { escapeRegexMatch } from "https://deno.land/x/good@1.7.1.1/flattened/escape_regex_match.js"
 import { replacementId } from "./misc.js"
 
+
+export const kind = Object.freeze({
+    directive: 1,
+    whitespace: 2,
+    number: 3,
+    comment: 4,
+    string: 5,
+    identifier: 6,
+    punctuation: 7,
+    other: 8,
+})
+
 export const directivePatternStart = /^[ \t]*#.+/
 export const whitespacePatternStart = /^[ \t\n\r]+/
 // number literal (straight from the spec)
@@ -80,17 +92,6 @@ export const punctuationList = [
 
 export const punctuationRegex = new RegExp(`(${punctuationList.map(escapeRegexMatch).join("|")})`, "g")
 export const punctuationRegexStart = new RegExp(`^(${punctuationList.map(escapeRegexMatch).join("|")})`, "g")
-
-export const kind = Object.freeze({
-    directive: 1,
-    whitespace: 2,
-    number: 3,
-    comment: 4,
-    string: 5,
-    identifier: 6,
-    punctuation: 7,
-    other: 8,
-})
 
 export const tokenize = ({string, path}) => {
     
