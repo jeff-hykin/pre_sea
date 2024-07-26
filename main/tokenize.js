@@ -1,8 +1,19 @@
 import { escapeRegexMatch } from "https://deno.land/x/good@1.7.1.1/flattened/escape_regex_match.js"
+import { replacementId } from "./misc.js"
 
+export const directivePatternStart = /^[ \t]*#.+/
+export const whitespacePatternStart = /^[ \t\n\r]+/
+// number literal (straight from the spec)
+// "optional period, a required decimal digit, and then continue with any sequence of letters, digits, underscores, periods, and exponents. Exponents are the two-character sequences ‘e+’, ‘e-’, ‘E+’, ‘E-’, ‘p+’, ‘p-’, ‘P+’, and ‘P-’ "
+export const numberPattern = /(?:\.?[0-9a-zA-Z_\.]|[eEpP][-+])*/
+export const numberPatternStart = /^(?:\.?[0-9a-zA-Z_\.]|[eEpP][-+])*/
 export const identifierPattern = /(?:[a-zA-Z_]|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})(?:[a-zA-Z0-9_]|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*/
+export const identifierPatternStart = /^(?:[a-zA-Z_]|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})(?:[a-zA-Z0-9_]|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*/
+export const commentPatternStart = /^\/\/.+|\/\*([^\*]|\*[^\/])*\*\//
 export const stringPattern = /"([^\\]|\\[^"\n\r])*"/g
+export const stringPatternStart = /^("([^\\]|\\[^"\n\r])*")/
 export const charLiteralPattern = /'([^\\]|\\[^'\n\r])*'/g
+export const charLiteralPatternStart = /^('([^\\]|\\[^'\n\r])*')/
 export const punctuationList = [
     "<<=",
     ">>=",
@@ -68,83 +79,92 @@ export const punctuationList = [
 ]
 
 export const punctuationRegex = new RegExp(`(${punctuationList.map(escapeRegexMatch).join("|")})`, "g")
-export const tokenize = (string) => {
-    // null bytes outside of string/char is treated as whitespace
-    let remainingString = string.replace(/"([^\\]|\\[^"\n\r])*"|'([^\\]|\\[^'\n\r])*'|.+/g, (result)=>{
-        // if string/char no change
-        if (result[0] != `"` && result[0] != `'`) {
-            return result.replace(/\0/g, " ")
-        // else replace null bytes with spaces
-        } else {
-            return result
-        }
-    })
-    const tokens = []
-    let index = 0
-    while (remainingString.length) {
-        let match
-        // null bytes outside of string/char is treated as whitespace
-        if ((match = remainingString.match(/\s+/))) {
-            tokens.push({
-                kind: "whitespace",
-                value: match[0],
-                startIndex: index,
-                endIndex: index+match[0].length,
-            })
-        // number literal (straight from the spec)
-        // "optional period, a required decimal digit, and then continue with any sequence of letters, digits, underscores, periods, and exponents. Exponents are the two-character sequences ‘e+’, ‘e-’, ‘E+’, ‘E-’, ‘p+’, ‘p-’, ‘P+’, and ‘P-’ "
-        } else if ((match = remainingString.match(/\.?\d([0-9a-zA-Z_\.]|[eEpP][-+])*/))) {
-            tokens.push({
-                kind: "numeric",
-                value: match[0],
-                startIndex: index,
-                endIndex: index+match[0].length,
-            })
-        // identifier
-        } else if ((match = remainingString.match(identifierPattern))) {
-            tokens.push({
-                kind: "identifier",
-                value: match[0],
-                startIndex: index,
-                endIndex: index+match[0].length,
-            })
-        // string
-        } else if ((match = remainingString.match(stringPattern))) {
-            tokens.push({
-                kind: "string",
-                value: match[0],
-                startIndex: index,
-                endIndex: index+match[0].length,
-            })
-        // char literal
-        } else if ((match = remainingString.match(charLiteralPattern))) {
-            tokens.push({
-                kind: "charLiteral",
-                value: match[0],
-                startIndex: index,
-                endIndex: index+match[0].length,
-            })
-        // punctuation
-        } else if ((match = remainingString.match(punctuationRegex))) {
-            tokens.push({
-                kind: "punctuation",
-                value: match[0],
-                startIndex: index,
-                endIndex: index+match[0].length,
-            })
-        } else if ((match = remainingString.match(/.+/))) {
-            tokens.push({
-                kind: "other",
-                value: match[0],
-                startIndex: index,
-                endIndex: index+match[0].length,
-            })
-        } else {
-            throw Error(`This should be unreachable: 82094209`)
-        }
-        index += match[0].length
-        remainingString = remainingString.slice(match[0].length)
+export const punctuationRegexStart = new RegExp(`^(${punctuationList.map(escapeRegexMatch).join("|")})`, "g")
+
+export const kind = Object.freeze({
+    directive: 1,
+    whitespace: 2,
+    number: 3,
+    comment: 4,
+    string: 5,
+    identifier: 6,
+    punctuation: 7,
+    other: 8,
+})
+
+export const tokenize = ({string, path}) => {
+    
+    // 
+    // get a unique id for the line extension
+    // 
+    let lineExtensionId = replacementId()
+    while (string.match(lineExtensionId)) {
+        lineExtensionId = replacementId()
     }
+    lineExtensionId = lineExtensionId+replacementId()
+    
+    // handle line extension 
+    string = string.replace(/\\\n/g, lineExtensionId)
+
+    // 
+    // tokenize
+    // 
+    let tokens = []
+    let lineNumber = 1
+    while (string.length != 0) {
+        // match one of:
+            // directive
+            // or whitespace
+            // or number
+            // or comment
+            // or string
+            // or identifier
+            // or punctuation
+            // or other
+        
+        //
+        // directives
+        //
+        let kind
+        let match
+        if (match = string.match(directivePatternStart)) {
+            kind = kind.directive
+        } else if (match = string.match(whitespacePatternStart)) {
+            kind = kind.whitespace
+        } else if (match = string.match(numberPatternStart)) {
+            kind = kind.number
+        } else if (match = string.match(commentPatternStart)) {
+            kind = kind.comment
+        } else if (match = string.match(stringPatternStart)) {
+            kind = kind.string
+        } else if (match = string.match(identifierPatternStart)) {
+            kind = kind.identifier
+        } else if (match = string.match(punctuationRegexStart)) {
+            kind = kind.punctuation
+        } else if (match = string.match(/.+/)) {
+            kind = kind.other
+        } else if (string.length == 0) {
+            break
+        } else {
+            throw Error(`This should be unreachable: 50390539`)
+        }
+        const token = {
+            kind,
+            text: match[0],
+            path,
+            startLine: -1,
+            endLine: -1, 
+        }
+        // reduce the string
+        string = string.slice(match[0].length)
+        // track line number
+        token.startLine = lineNumber
+        lineNumber += [...match[0].matchAll(new RegExp(lineExtensionId+"|\n|\r","g"))].length
+        token.endLine = lineNumber
+        // fully remove line extension
+        token.text = token.text.replace(id,"")
+        tokens.push(token)
+    }
+    
     return tokens
-    // TODO: check if $ should be treated as a letter/identifier 
 }
