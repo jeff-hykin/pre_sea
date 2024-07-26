@@ -4,7 +4,21 @@ import { Stringy } from "./generic/stringy.js"
 import { tokenize, kinds } from "./tokenize.js"
 
 const neutralKinds = [ kinds.whitespace, kinds.comment, kinds.punctuation, kinds.string, kinds.number, kinds.other ]
+const specialMacros = [
+    // see: https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html
+    "__FILE__",
+    "__LINE__",
+    "__DATE__",
+    "__TIME__",
+    "__STDC__",
+    "__STDC_VERSION__",
+    "__STDC_HOSTED__",
+    "__cplusplus",
+    "__OBJC__",
+    "__ASSEMBLER__",
+]
 // the recursive one
+// mutates tokens array
 function expansion({ objectMacros, functionMacros, tokens, getFile }) {
     let tokenIndex = 0
     while (tokenIndex < tokens.length) {
@@ -16,6 +30,23 @@ function expansion({ objectMacros, functionMacros, tokens, getFile }) {
         }
         
         if (token.kind == kinds.identifier) {
+            
+            // see: https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html
+            if (specialMacros.includes(token.text)) {
+                if (token.text == '__FILE__') {
+                    token.text = token.path
+                } else if (token.text == '__LINE__') {
+                    // TODO: test gcc/clang to see if it should be token.startLine or token.endLine
+                    // FIXME: I think this is wrong for nested macro expansions
+                    //        check if the token is original or from an expansion
+                    //        if from an expansion, then use the line of what the expansion replaced
+                    token.text = String(token.startLine)
+                }
+                // FIXME: other special macros expansion
+                continue
+            }
+
+
             // easy check
             if (objectMacros[token.text]) {
                 // FIXME: macro expansion
@@ -102,9 +133,36 @@ function expansion({ objectMacros, functionMacros, tokens, getFile }) {
                 }
                 // FIXME: finish defining macro
             } else if (directive == 'include') {
-                // FIXME: include
+                const includeRawTarget = remainingText.trim()
+                const quoteIncludeTarget = includeRawTarget.startsWith('"') && includeRawTarget.endsWith('"')
+                const angleIncludeTarget = includeRawTarget.startsWith('<') && includeRawTarget.endsWith('>')
+                const includeTarget = includeRawTarget.slice(1, -1)
+                let newString = ""
+                let fullPath
+                if (quoteIncludeTarget) {
+                    // FIXME: probably need to add like `${parentPath(token.path)}/${includeTarget}`
+                    fullPath = includeTarget
+                    newString = getFile(includeTarget)
+                } else if (angleIncludeTarget) {
+                    // FIXME: do the proper lookup 
+                    // newString = getFile(includeTarget)
+                    // fullPath = includeTarget
+                }
+                if (!newString) {
+                    return Error(`Bad include directive: ${token.path}:${token.startLine}`)
+                }
+                const newTokens = expansion({
+                    objectMacros,
+                    functionMacros,
+                    tokens: tokenize(newString), 
+                    getFile 
+                })
+                // TODO: may need to add a #line directive
+                tokens.splice(tokenIndex, 1, ...newTokens)
             } else if (directive == 'if' || directive == 'ifdef' || directive == 'ifndef' || directive == 'elif' || directive == 'else' || directive == 'endif') {
                 // FIXME: if/elif/else/endif
+                    // need full compile time eval logic here
+                    // needs to read ahead a bunch and effectively delete the closing endif/else/elif
             } else if (directive == 'pragma') {
                 // FIXME: pragma
             } else if (directive == 'line') {
@@ -116,5 +174,4 @@ function expansion({ objectMacros, functionMacros, tokens, getFile }) {
             continue
         }
     }
-    
 }
