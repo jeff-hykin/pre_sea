@@ -5,6 +5,7 @@ import { replacementId } from "./misc.js"
 
 
 export const kinds = Object.freeze({
+    _: 0,
     directive: 1,
     whitespace: 2,
     number: 3,
@@ -104,7 +105,7 @@ export class Token {
         this.endLine = endLine
     }
     toString() {
-        return `{ kind: ${JSON.stringify(Object.keys(kinds)[this.kind]).padStart(12," ")}, startLine: ${`${this.startLine}`.padStart(4, " ")}, endLine: ${`${this.endLine}`.padStart(4, " ")}, path: ${JSON.stringify(this.path)}, text: ${JSON.stringify(this.text)} }`
+        return `{ kind: ${JSON.stringify(Object.keys(kinds)[this.kind]).padStart(13," ")}, startLine: ${`${this.startLine}`.padStart(4, " ")}, endLine: ${`${this.endLine}`.padStart(4, " ")}, path: ${JSON.stringify(this.path)}, text: ${JSON.stringify(this.text)} }`
     }
     [Symbol.for("Deno.customInspect")]() {
         return this.toString()
