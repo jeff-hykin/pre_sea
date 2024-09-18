@@ -17,8 +17,8 @@ export const directivePatternStart = /^[ \t]*#.+/
 export const whitespacePatternStart = /^[ \t\n\r]+/
 // number literal (straight from the spec)
 // "optional period, a required decimal digit, and then continue with any sequence of letters, digits, underscores, periods, and exponents. Exponents are the two-character sequences ‘e+’, ‘e-’, ‘E+’, ‘E-’, ‘p+’, ‘p-’, ‘P+’, and ‘P-’ "
-export const numberPattern = /(?:\.?[0-9a-zA-Z_\.]|[eEpP][-+])*/
-export const numberPatternStart = /^(?:\.?[0-9a-zA-Z_\.]|[eEpP][-+])*/
+export const numberPattern = /(?:\.?[0-9a-zA-Z_\.]|[eEpP][-+])+/
+export const numberPatternStart = /^(?:\.?[0-9a-zA-Z_\.]|[eEpP][-+])+/
 export const identifierPattern = /(?:[a-zA-Z_]|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})(?:[a-zA-Z0-9_]|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*/
 export const identifierPatternStart = /^(?:[a-zA-Z_]|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})(?:[a-zA-Z0-9_]|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*/
 export const commentPatternStart = /^\/\/.+|\/\*([^\*]|\*[^\/])*\*\//
@@ -93,6 +93,28 @@ export const punctuationList = [
 export const punctuationRegex = new RegExp(`(${punctuationList.map(escapeRegexMatch).join("|")})`, "g")
 export const punctuationRegexStart = new RegExp(`^(${punctuationList.map(escapeRegexMatch).join("|")})`, "g")
 
+export class Token {
+    constructor({kind, text, path, startLine, endLine}) {
+        this.kind = kind
+        this.text = text
+        this.path = path
+        this.startLine = startLine
+        this.endLine = endLine
+    }
+}
+
+/**
+ * Tokenizes the provided string into a list of tokens.
+ *
+ * This function takes a string and a file path, and returns an array of `Token` objects representing the tokens in the string. The tokens are identified based on a set of regular expressions that match different types of tokens, such as directives, whitespace, numbers, comments, strings, identifiers, and punctuation.
+ *
+ * The function also handles line extensions (represented by a special line extension ID) and updates the `startLine` and `endLine` properties of each token to reflect the line numbers in the original string.
+ *
+ * @param {object} options - The options object.
+ * @param {string} options.string - The input string to be tokenized.
+ * @param {string} options.path - The file path of the input string.
+ * @returns {Token[]} - An array of `Token` objects representing the tokens in the input string.
+ */
 export const tokenize = ({string, path}) => {
     
     // 
@@ -112,7 +134,13 @@ export const tokenize = ({string, path}) => {
     // 
     let tokens = []
     let lineNumber = 1
+    let prevLength = string.length+1
     while (string.length != 0) {
+        // prevent infinite loop if this code is broken somehow
+        if (prevLength == string.length) {
+            throw Error(`Internal error, string length did not change: ${string}`)
+        }
+        prevLength = string.length
         // match one of:
             // directive
             // or whitespace
@@ -126,31 +154,31 @@ export const tokenize = ({string, path}) => {
         //
         // directives
         //
-        let kind
+        let theKind
         let match
         if (match = string.match(directivePatternStart)) {
-            kind = kind.directive
+            theKind = kind.directive
         } else if (match = string.match(whitespacePatternStart)) {
-            kind = kind.whitespace
+            theKind = kind.whitespace
         } else if (match = string.match(numberPatternStart)) {
-            kind = kind.number
+            theKind = kind.number
         } else if (match = string.match(commentPatternStart)) {
-            kind = kind.comment
+            theKind = kind.comment
         } else if (match = string.match(stringPatternStart)) {
-            kind = kind.string
+            theKind = kind.string
         } else if (match = string.match(identifierPatternStart)) {
-            kind = kind.identifier
+            theKind = kind.identifier
         } else if (match = string.match(punctuationRegexStart)) {
-            kind = kind.punctuation
+            theKind = kind.punctuation
         } else if (match = string.match(/.+/)) {
-            kind = kind.other
+            theKind = kind.other
         } else if (string.length == 0) {
             break
         } else {
             throw Error(`This should be unreachable: 50390539`)
         }
         const token = {
-            kind,
+            kind: theKind,
             text: match[0],
             path,
             startLine: -1,
@@ -163,8 +191,8 @@ export const tokenize = ({string, path}) => {
         lineNumber += [...match[0].matchAll(new RegExp(lineExtensionId+"|\n|\r","g"))].length
         token.endLine = lineNumber
         // fully remove line extension
-        token.text = token.text.replace(id,"")
-        tokens.push(token)
+        token.text = token.text.replace(lineExtensionId,"")
+        tokens.push(new Token(token))
     }
     
     return tokens

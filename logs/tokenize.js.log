@@ -1,0 +1,467 @@
+[
+  Token {
+    kind: 2,
+    text: "\n",
+    path: "test.cpp",
+    startLine: 1,
+    endLine: 2
+  },
+  Token {
+    kind: 1,
+    text: "#include <math.h>",
+    path: "test.cpp",
+    startLine: 2,
+    endLine: 2
+  },
+  Token {
+    kind: 2,
+    text: "\n",
+    path: "test.cpp",
+    startLine: 2,
+    endLine: 3
+  },
+  Token {
+    kind: 1,
+    text: "#include <stdio.h>",
+    path: "test.cpp",
+    startLine: 3,
+    endLine: 3
+  },
+  Token {
+    kind: 2,
+    text: "\n",
+    path: "test.cpp",
+    startLine: 3,
+    endLine: 4
+  },
+  Token {
+    kind: 3,
+    text: "int",
+    path: "test.cpp",
+    startLine: 4,
+    endLine: 4
+  },
+  Token {
+    kind: 2,
+    text: " ",
+    path: "test.cpp",
+    startLine: 4,
+    endLine: 4
+  },
+  Token {
+    kind: 3,
+    text: "main",
+    path: "test.cpp",
+    startLine: 4,
+    endLine: 4
+  },
+  Token {
+    kind: 7,
+    text: "(",
+    path: "test.cpp",
+    startLine: 4,
+    endLine: 4
+  },
+  Token {
+    kind: 7,
+    text: ")",
+    path: "test.cpp",
+    startLine: 4,
+    endLine: 4
+  },
+  Token {
+    kind: 2,
+    text: " ",
+    path: "test.cpp",
+    startLine: 4,
+    endLine: 4
+  },
+  Token {
+    kind: 7,
+    text: "{",
+    path: "test.cpp",
+    startLine: 4,
+    endLine: 4
+  },
+  Token {
+    kind: 2,
+    text: "\n    ",
+    path: "test.cpp",
+    startLine: 4,
+    endLine: 5
+  },
+  Token {
+    kind: 3,
+    text: "double",
+    path: "test.cpp",
+    startLine: 5,
+    endLine: 5
+  },
+  Token {
+    kind: 2,
+    text: " ",
+    path: "test.cpp",
+    startLine: 5,
+    endLine: 5
+  },
+  Token {
+    kind: 3,
+    text: "a",
+    path: "test.cpp",
+    startLine: 5,
+    endLine: 5
+  },
+  Token {
+    kind: 7,
+    text: ",",
+    path: "test.cpp",
+    startLine: 5,
+    endLine: 5
+  },
+  Token {
+    kind: 2,
+    text: " ",
+    path: "test.cpp",
+    startLine: 5,
+    endLine: 5
+  },
+  Token {
+    kind: 3,
+    text: "b",
+    path: "test.cpp",
+    startLine: 5,
+    endLine: 5
+  },
+  Token {
+    kind: 7,
+    text: ",",
+    path: "test.cpp",
+    startLine: 5,
+    endLine: 5
+  },
+  Token {
+    kind: 2,
+    text: " ",
+    path: "test.cpp",
+    startLine: 5,
+    endLine: 5
+  },
+  Token {
+    kind: 3,
+    text: "c",
+    path: "test.cpp",
+    startLine: 5,
+    endLine: 5
+  },
+  Token {
+    kind: 7,
+    text: ",",
+    path: "test.cpp",
+    startLine: 5,
+    endLine: 5
+  },
+  Token {
+    kind: 2,
+    text: " ",
+    path: "test.cpp",
+    startLine: 5,
+    endLine: 5
+  },
+  Token {
+    kind: 3,
+    text: "discriminant",
+    path: "test.cpp",
+    startLine: 5,
+    endLine: 5
+  },
+  Token {
+    kind: 7,
+    text: ",",
+    path: "test.cpp",
+    startLine: 5,
+    endLine: 5
+  },
+  Token {
+    kind: 2,
+    text: " ",
+    path: "test.cpp",
+    startLine: 5,
+    endLine: 5
+  },
+  Token {
+    kind: 3,
+    text: "root1",
+    path: "test.cpp",
+    startLine: 5,
+    endLine: 5
+  },
+  Token {
+    kind: 7,
+    text: ",",
+    path: "test.cpp",
+    startLine: 5,
+    endLine: 5
+  },
+  Token {
+    kind: 2,
+    text: " ",
+    path: "test.cpp",
+    startLine: 5,
+    endLine: 5
+  },
+  Token {
+    kind: 3,
+    text: "root2",
+    path: "test.cpp",
+    startLine: 5,
+    endLine: 5
+  },
+  Token {
+    kind: 7,
+    text: ",",
+    path: "test.cpp",
+    startLine: 5,
+    endLine: 5
+  },
+  Token {
+    kind: 2,
+    text: " ",
+    path: "test.cpp",
+    startLine: 5,
+    endLine: 5
+  },
+  Token {
+    kind: 3,
+    text: "realPart",
+    path: "test.cpp",
+    startLine: 5,
+    endLine: 5
+  },
+  Token {
+    kind: 7,
+    text: ",",
+    path: "test.cpp",
+    startLine: 5,
+    endLine: 5
+  },
+  Token {
+    kind: 2,
+    text: " ",
+    path: "test.cpp",
+    startLine: 5,
+    endLine: 5
+  },
+  Token {
+    kind: 3,
+    text: "imagPart",
+    path: "test.cpp",
+    startLine: 5,
+    endLine: 5
+  },
+  Token {
+    kind: 7,
+    text: ";",
+    path: "test.cpp",
+    startLine: 5,
+    endLine: 5
+  },
+  Token {
+    kind: 2,
+    text: "\n    ",
+    path: "test.cpp",
+    startLine: 5,
+    endLine: 6
+  },
+  Token {
+    kind: 3,
+    text: "printf",
+    path: "test.cpp",
+    startLine: 6,
+    endLine: 6
+  },
+  Token {
+    kind: 7,
+    text: "(",
+    path: "test.cpp",
+    startLine: 6,
+    endLine: 6
+  },
+  Token {
+    kind: 5,
+    text: '"Enter coefficients a, b and c: ");\n' +
+      '    scanf("%lf %lf %lf", &a, &b, &c);\n' +
+      "\n" +
+      "    discriminant = b * b "... 619 more characters,
+    path: "test.cpp",
+    startLine: 6,
+    endLine: 28
+  },
+  Token {
+    kind: 7,
+    text: ",",
+    path: "test.cpp",
+    startLine: 28,
+    endLine: 28
+  },
+  Token {
+    kind: 2,
+    text: " ",
+    path: "test.cpp",
+    startLine: 28,
+    endLine: 28
+  },
+  Token {
+    kind: 3,
+    text: "realPart",
+    path: "test.cpp",
+    startLine: 28,
+    endLine: 28
+  },
+  Token {
+    kind: 7,
+    text: ",",
+    path: "test.cpp",
+    startLine: 28,
+    endLine: 28
+  },
+  Token {
+    kind: 2,
+    text: " ",
+    path: "test.cpp",
+    startLine: 28,
+    endLine: 28
+  },
+  Token {
+    kind: 3,
+    text: "imagPart",
+    path: "test.cpp",
+    startLine: 28,
+    endLine: 28
+  },
+  Token {
+    kind: 7,
+    text: ",",
+    path: "test.cpp",
+    startLine: 28,
+    endLine: 28
+  },
+  Token {
+    kind: 2,
+    text: " ",
+    path: "test.cpp",
+    startLine: 28,
+    endLine: 28
+  },
+  Token {
+    kind: 3,
+    text: "realPart",
+    path: "test.cpp",
+    startLine: 28,
+    endLine: 28
+  },
+  Token {
+    kind: 7,
+    text: ",",
+    path: "test.cpp",
+    startLine: 28,
+    endLine: 28
+  },
+  Token {
+    kind: 2,
+    text: " ",
+    path: "test.cpp",
+    startLine: 28,
+    endLine: 28
+  },
+  Token {
+    kind: 3,
+    text: "imagPart",
+    path: "test.cpp",
+    startLine: 28,
+    endLine: 28
+  },
+  Token {
+    kind: 7,
+    text: ")",
+    path: "test.cpp",
+    startLine: 28,
+    endLine: 28
+  },
+  Token {
+    kind: 7,
+    text: ";",
+    path: "test.cpp",
+    startLine: 28,
+    endLine: 28
+  },
+  Token {
+    kind: 2,
+    text: "\n    ",
+    path: "test.cpp",
+    startLine: 28,
+    endLine: 29
+  },
+  Token {
+    kind: 7,
+    text: "}",
+    path: "test.cpp",
+    startLine: 29,
+    endLine: 29
+  },
+  Token {
+    kind: 2,
+    text: "\n\n    ",
+    path: "test.cpp",
+    startLine: 29,
+    endLine: 31
+  },
+  Token {
+    kind: 3,
+    text: "return",
+    path: "test.cpp",
+    startLine: 31,
+    endLine: 31
+  },
+  Token {
+    kind: 2,
+    text: " ",
+    path: "test.cpp",
+    startLine: 31,
+    endLine: 31
+  },
+  Token {
+    kind: 3,
+    text: "0",
+    path: "test.cpp",
+    startLine: 31,
+    endLine: 31
+  },
+  Token {
+    kind: 7,
+    text: ";",
+    path: "test.cpp",
+    startLine: 31,
+    endLine: 31
+  },
+  Token {
+    kind: 2,
+    text: "\n",
+    path: "test.cpp",
+    startLine: 31,
+    endLine: 32
+  },
+  Token {
+    kind: 7,
+    text: "}",
+    path: "test.cpp",
+    startLine: 32,
+    endLine: 32
+  },
+  Token {
+    kind: 2,
+    text: " \n",
+    path: "test.cpp",
+    startLine: 32,
+    endLine: 33
+  }
+]
