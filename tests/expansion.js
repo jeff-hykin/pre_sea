@@ -1,10 +1,11 @@
 import { expansion } from '../main/main.js'
 import { tokenize } from '../main/tokenize.js'
+import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.72/main/file_system.js"
 
-const code = `
-// #include "math.h"
+const mathH = `#define PI 3.14159265358979323846`
+const testCpp = `
+#include "math.h"
 
-#define PI 3.14159265358979323846
 int main() {
     double a, b, c, discriminant, root1, root2, realPart, imagPart;
     printf("Enter coefficients a, b and c: ");
@@ -40,8 +41,14 @@ int main() {
 for (const each of expansion({
         objectMacros: {},
         functionMacros: {},
-        tokens: tokenize({string: code, path: "test.cpp"}),
-        getFile: (path)=>Deno.readTextFileSync(path)
+        tokens: tokenize({string: testCpp, path: `${FileSystem.pwd}/test.cpp`}),
+        getFile: (path)=>{
+            if (path.endsWith("math.h")) {
+                return mathH
+            } else {
+                return Deno.readTextFileSync(path)
+            }
+        }
     })) {
     
     console.log(

@@ -1,9 +1,10 @@
 import { escapeRegexMatch } from "https://deno.land/x/good@1.7.1.1/flattened/escape_regex_match.js"
 import { tokenize, kinds } from "./tokenize.js"
+const Path = await import('https://deno.land/std@0.117.0/path/mod.ts')
 
 // next Tasks:
-    // get #include working for relative paths
-    // get #define working for object macros
+    // DONE: get #include working for relative paths
+    // DONE: get #define working for object macros
     // test out nested macros and __LINE__
     // get ifndef working
 
@@ -148,8 +149,8 @@ export function expansion({ objectMacros, functionMacros, tokens, getFile }) {
                 let fullPath
                 if (quoteIncludeTarget) {
                     // FIXME: probably need to add like `${parentPath(token.path)}/${includeTarget}`
-                    fullPath = includeTarget
-                    newString = getFile(includeTarget)
+                    fullPath = `${Path.dirname(token.path)}/${includeTarget}`
+                    newString = getFile(fullPath)
                 } else if (angleIncludeTarget) {
                     // FIXME: do the proper lookup 
                     // newString = getFile(includeTarget)
@@ -161,7 +162,7 @@ export function expansion({ objectMacros, functionMacros, tokens, getFile }) {
                 const newTokens = expansion({
                     objectMacros,
                     functionMacros,
-                    tokens: tokenize(newString), 
+                    tokens: tokenize({ string: newString, path: fullPath }), 
                     getFile 
                 })
                 // TODO: may need to add a #line directive
