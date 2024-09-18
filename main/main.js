@@ -6,6 +6,7 @@ const Path = await import('https://deno.land/std@0.117.0/path/mod.ts')
     // DONE: get #include working for relative paths
     // DONE: get #define working for object macros
     // test out nested macros and __LINE__
+    // function macros
     // get ifndef working
 
 
@@ -43,12 +44,15 @@ export function expansion({ objectMacros, functionMacros, tokens, getFile }) {
                     token.text = token.path
                 } else if (token.text == '__LINE__') {
                     // TODO: test gcc/clang to see if it should be token.startLine or token.endLine
+                    //       (startLine can be different from endLine because of line continuations)
+                    // 
                     // FIXME: I think this is wrong for nested macro expansions
                     //        check if the token is original or from an expansion
                     //        if from an expansion, then use the line of what the expansion replaced
-                    token.text = String(token.startLine)
+                    token.text = String(token.startLine-1)
                 }
                 // FIXME: other special macros expansion
+                tokenIndex++
                 continue
             }
 
@@ -57,9 +61,11 @@ export function expansion({ objectMacros, functionMacros, tokens, getFile }) {
             if (objectMacros[token.text]) {
                 // replace token with list of replacement tokens
                 tokens[tokenIndex] = objectMacros[token.text]
+                tokenIndex++
                 continue
             }
             
+            // TODO: test this out
             if (functionMacros[token.text]) {
                 let foundOpenParen = false
                 let foundCloseParen = false
@@ -126,8 +132,6 @@ export function expansion({ objectMacros, functionMacros, tokens, getFile }) {
                 if (!macroName || !macroBody) {
                     return Error(`Bad define directive: ${token.path}:${token.startLine}`)
                 }
-
-                // FIXME: tokenize macro body
 
                 if (macroArgs) {
                     // FUTURE: add warning for redefinition

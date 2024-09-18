@@ -3,15 +3,16 @@ import { tokenize } from '../main/tokenize.js'
 import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.72/main/file_system.js"
 
 const mathH = `#define PI 3.14159265358979323846`
-const testCpp = `
-#include "math.h"
+const testCpp = `#include "math.h"
 
 int main() {
     double a, b, c, discriminant, root1, root2, realPart, imagPart;
     printf("Enter coefficients a, b and c: ");
     scanf("%lf %lf %lf", &a, &b, &c);
     PI;
-
+    
+    __FILE__;
+    __LINE__;
     discriminant = b * b - 4 * a * c;
 
     // condition for real and different roots
