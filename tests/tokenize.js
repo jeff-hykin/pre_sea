@@ -32,5 +32,8 @@ int main() {
 
     return 0;
 } 
-`
-console.log(tokenize({string: code, path: "test.cpp"}))
+` 
+
+for (const each of tokenize({string: code, path: "test.cpp"})) {
+    console.log(each)
+}
