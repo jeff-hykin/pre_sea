@@ -54,7 +54,8 @@ export function expansion({ objectMacros, functionMacros, tokens, getFile }) {
 
             // easy check
             if (objectMacros[token.text]) {
-                // FIXME: macro expansion
+                // replace token with list of replacement tokens
+                tokens[tokenIndex] = objectMacros[token.text]
                 continue
             }
             
@@ -83,7 +84,7 @@ export function expansion({ objectMacros, functionMacros, tokens, getFile }) {
                         if (futureToken.text == ')') {
                             foundCloseParen = true
                             paraenthesisCount -= 1
-                            if (paraenthesisCount < 0) {
+                            if (paraenthesisCount <= 0) {
                                 break
                             }
                             continue
@@ -109,7 +110,7 @@ export function expansion({ objectMacros, functionMacros, tokens, getFile }) {
             continue
         }
         
-        // only one left is directive
+        // only one left (that needs transforming) is directive
         if (token.kind == kinds.directive) {
             const match = token.text.match(/\s*\#\s*(\w*)/)
             const directive = match[1]
@@ -131,12 +132,13 @@ export function expansion({ objectMacros, functionMacros, tokens, getFile }) {
                     // FUTURE: add warning for redefinition
                     functionMacros[macroName] = {
                         args: macroArgs.slice(1, -1).split(',').map(each=>each.trim()),
-                        body: macroBody,
+                        body: tokenize({ string: macroBody, path: token.path, startLine: token.startLine }),
                     }
                 } else {
-                    objectMacros[macroName] = macroBody
+                    objectMacros[macroName] = tokenize({ string: macroBody, path: token.path, startLine: token.startLine })
                 }
-                // FIXME: finish defining macro
+                tokens[tokenIndex] = []
+                tokenIndex++
             } else if (directive == 'include') {
                 const includeRawTarget = remainingText.trim()
                 const quoteIncludeTarget = includeRawTarget.startsWith('"') && includeRawTarget.endsWith('"')
@@ -176,8 +178,14 @@ export function expansion({ objectMacros, functionMacros, tokens, getFile }) {
             } else {
                 return Error(`Bad directive: ${token.text}`)
             }
+
+            tokenIndex++
             continue
         }
+
+        // no transformation
+        tokenIndex++
+        continue
     }
-    return tokens
+    return tokens.flat(Infinity)
 }

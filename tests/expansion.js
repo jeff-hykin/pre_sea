@@ -4,10 +4,12 @@ import { tokenize } from '../main/tokenize.js'
 const code = `
 // #include "math.h"
 
+#define PI 3.14159265358979323846
 int main() {
     double a, b, c, discriminant, root1, root2, realPart, imagPart;
     printf("Enter coefficients a, b and c: ");
     scanf("%lf %lf %lf", &a, &b, &c);
+    PI;
 
     discriminant = b * b - 4 * a * c;
 
@@ -34,11 +36,15 @@ int main() {
     return 0;
 } 
 `
-console.log(
-    expansion({
+
+for (const each of expansion({
         objectMacros: {},
         functionMacros: {},
         tokens: tokenize({string: code, path: "test.cpp"}),
         getFile: (path)=>Deno.readTextFileSync(path)
-    })
-)
+    })) {
+    
+    console.log(
+        each
+    )
+}

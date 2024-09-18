@@ -20,8 +20,8 @@ export const directivePatternStart = /^[ \t]*#.+/
 export const whitespacePatternStart = /^[ \t\n\r]+/
 // number literal (straight from the spec)
 // "optional period, a required decimal digit, and then continue with any sequence of letters, digits, underscores, periods, and exponents. Exponents are the two-character sequences ‘e+’, ‘e-’, ‘E+’, ‘E-’, ‘p+’, ‘p-’, ‘P+’, and ‘P-’ "
-export const numberPattern = /(?:\.?[0-9a-zA-Z_\.]|[eEpP][-+])+/
-export const numberPatternStart = /^(?:\.?[0-9a-zA-Z_\.]|[eEpP][-+])+/
+export const numberPattern = /\.?[0-9](?:[0-9a-zA-Z_\.]|[eEpP][-+])*/
+export const numberPatternStart = /^\.?[0-9](?:[0-9a-zA-Z_\.]|[eEpP][-+])*/
 export const identifierPattern = /(?:[a-zA-Z_]|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})(?:[a-zA-Z0-9_]|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*/
 export const identifierPatternStart = /^(?:[a-zA-Z_]|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})(?:[a-zA-Z0-9_]|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*/
 export const commentPatternStart = /^\/\/.+|\/\*([^\*]|\*[^\/])*\*\//
@@ -124,8 +124,8 @@ export class Token {
  * @param {string} options.path - The file path of the input string.
  * @returns {Token[]} - An array of `Token` objects representing the tokens in the input string.
  */
-export const tokenize = ({string, path}) => {
-    
+export const tokenize = ({string, path, startLine=1}) => {
+    const lineOffset = startLine-1
     // 
     // get a unique id for the line extension
     // 
@@ -196,7 +196,7 @@ export const tokenize = ({string, path}) => {
         // reduce the string
         string = string.slice(match[0].length)
         // track line number
-        token.startLine = lineNumber
+        token.startLine = lineNumber+lineOffset
         lineNumber += [...match[0].matchAll(new RegExp(lineExtensionId+"|\n|\r","g"))].length
         token.endLine = lineNumber
         // fully remove line extension
