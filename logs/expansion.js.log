@@ -1,9 +1,7 @@
 [
   { kind:     "number", startLine:    1, endLine:    2, path: "test.cpp", text: "\n" },
-  { kind: "whitespace", startLine:    2, endLine:    2, path: "test.cpp", text: "#include <math.h>" },
-  { kind:     "number", startLine:    2, endLine:    3, path: "test.cpp", text: "\n" },
-  { kind: "whitespace", startLine:    3, endLine:    3, path: "test.cpp", text: "#include <stdio.h>" },
-  { kind:     "number", startLine:    3, endLine:    4, path: "test.cpp", text: "\n" },
+  { kind:     "string", startLine:    2, endLine:    2, path: "test.cpp", text: "// #include \"math.h\"" },
+  { kind:     "number", startLine:    2, endLine:    4, path: "test.cpp", text: "\n\n" },
   { kind:    "comment", startLine:    4, endLine:    4, path: "test.cpp", text: "int" },
   { kind:     "number", startLine:    4, endLine:    4, path: "test.cpp", text: " " },
   { kind:    "comment", startLine:    4, endLine:    4, path: "test.cpp", text: "main" },

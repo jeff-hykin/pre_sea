@@ -1,8 +1,10 @@
+import { toRepresentation } from "https://deno.land/x/good@1.8.0.0/flattened/to_representation.js"
 import { escapeRegexMatch } from "https://deno.land/x/good@1.7.1.1/flattened/escape_regex_match.js"
+import * as yaml from "https://deno.land/std@0.168.0/encoding/yaml.ts"
 import { replacementId } from "./misc.js"
 
 
-export const kind = Object.freeze({
+export const kinds = Object.freeze({
     directive: 1,
     whitespace: 2,
     number: 3,
@@ -101,6 +103,12 @@ export class Token {
         this.startLine = startLine
         this.endLine = endLine
     }
+    toString() {
+        return `{ kind: ${JSON.stringify(Object.keys(kinds)[this.kind]).padStart(12," ")}, startLine: ${`${this.startLine}`.padStart(4, " ")}, endLine: ${`${this.endLine}`.padStart(4, " ")}, path: ${JSON.stringify(this.path)}, text: ${JSON.stringify(this.text)} }`
+    }
+    [Symbol.for("Deno.customInspect")]() {
+        return this.toString()
+    }
 }
 
 /**
@@ -154,31 +162,31 @@ export const tokenize = ({string, path}) => {
         //
         // directives
         //
-        let theKind
+        let kind
         let match
         if (match = string.match(directivePatternStart)) {
-            theKind = kind.directive
+            kind = kinds.directive
         } else if (match = string.match(whitespacePatternStart)) {
-            theKind = kind.whitespace
+            kind = kinds.whitespace
         } else if (match = string.match(numberPatternStart)) {
-            theKind = kind.number
+            kind = kinds.number
         } else if (match = string.match(commentPatternStart)) {
-            theKind = kind.comment
+            kind = kinds.comment
         } else if (match = string.match(stringPatternStart)) {
-            theKind = kind.string
+            kind = kinds.string
         } else if (match = string.match(identifierPatternStart)) {
-            theKind = kind.identifier
+            kind = kinds.identifier
         } else if (match = string.match(punctuationRegexStart)) {
-            theKind = kind.punctuation
+            kind = kinds.punctuation
         } else if (match = string.match(/.+/)) {
-            theKind = kind.other
+            kind = kinds.other
         } else if (string.length == 0) {
             break
         } else {
             throw Error(`This should be unreachable: 50390539`)
         }
         const token = {
-            kind: theKind,
+            kind,
             text: match[0],
             path,
             startLine: -1,

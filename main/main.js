@@ -24,10 +24,10 @@ const specialMacros = [
 ]
 // the recursive one
 // mutates tokens array
-function expansion({ objectMacros, functionMacros, tokens, getFile }) {
+export function expansion({ objectMacros, functionMacros, tokens, getFile }) {
     let tokenIndex = 0
     while (tokenIndex < tokens.length) {
-        const token = tokens[token]
+        const token = tokens[tokenIndex]
         // pass along as-is
         if (neutralKinds.includes(token.kind)) {
             tokenIndex++
@@ -111,7 +111,7 @@ function expansion({ objectMacros, functionMacros, tokens, getFile }) {
         
         // only one left is directive
         if (token.kind == kinds.directive) {
-            const match = token.match(/\s*\#\s*(\w*)/)
+            const match = token.text.match(/\s*\#\s*(\w*)/)
             const directive = match[1]
             const remainingText = token.text.slice(match[0].length)
             if (directive == 'define') {
@@ -179,4 +179,5 @@ function expansion({ objectMacros, functionMacros, tokens, getFile }) {
             continue
         }
     }
+    return tokens
 }
