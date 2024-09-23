@@ -6,13 +6,28 @@ const Path = await import('https://deno.land/std@0.117.0/path/mod.ts')
 // next Tasks:
     // DONE: get #include working for relative paths
     // DONE: get #define working for object macros
+    // DONE: get ifndef working
     // test out nested macros and __LINE__
     // function macros
-    // get ifndef working
 
+// features todo:
+    // macro function expansion basic args
+    // #if with defined()
+    // #if with operators
+    // #include<>
+    // the ## and # for macros
+    // macro function expansion VARARGS
+    // finish __FILE__, __LINE__
+    // __DATE__, __TIME__,
+    // __STDC__, __STDC_VERSION__, __STDC_HOSTED__, __ASSEMBLER__
+    // #line markers
+    // pragma
+    // standard macros for gcc MacOS
+    // standard macros for gcc Linux
+    // embed
 
-const neutralKinds = [ kinds.whitespace, kinds.comment, kinds.punctuation, kinds.string, kinds.number, kinds.other ]
-const specialMacros = [
+const neutralKinds = new Set([ kinds.whitespace, kinds.comment, kinds.punctuation, kinds.string, kinds.number, kinds.other ])
+const specialMacros = new Set([
     // see: https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html
     "__FILE__",
     "__LINE__",
@@ -24,7 +39,7 @@ const specialMacros = [
     "__cplusplus",
     "__OBJC__",
     "__ASSEMBLER__",
-]
+])
 
 // the recursive one
 // mutates tokens array
@@ -34,7 +49,7 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
     function nextToken({ tokenIndex }) {
         const token = tokens[tokenIndex]
         // pass along as-is
-        if (neutralKinds.includes(token.kind)) {
+        if (neutralKinds.has(token.kind)) {
             return true
         }
         
@@ -44,7 +59,7 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
         if (expandMacros && token.kind == kinds.identifier) {
             
             // see: https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html
-            if (specialMacros.includes(token.text)) {
+            if (specialMacros.has(token.text)) {
                 if (token.text == '__FILE__') {
                     token.text = token.path
                 } else if (token.text == '__LINE__') {
@@ -285,7 +300,7 @@ function evalCondition({text, objectMacros, functionMacros}) {
     if (match = text.match(/^ifn?def/)) {
         const macroName = text.slice(match[0].length,).trim()
         // FIXME: test what this is supposed to do for built-in macros
-        const out = objectMacros[ macroName]
+        const out = objectMacros[macroName] || functionMacros[macroName] || specialMacros.has(macroName)
         if (text.startsWith("ifn")) {
             return !out
         }
