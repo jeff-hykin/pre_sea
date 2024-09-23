@@ -24,6 +24,33 @@ const specialMacros = [
     "__OBJC__",
     "__ASSEMBLER__",
 ]
+
+// TODO: it should be possible to do with without copying a bunch of tokens (wasted memory)
+function handleConditionals(tokens, index) {
+    let map = {}
+    let condition = tokens[index]
+    map[condition] = []
+    let index2 = index
+    // note the first token is effectively skipped
+    while (++index2 < tokens.length) {
+        const token = tokens[index2]
+        // nested (handles #if #ifdef #ifndef)
+        if (token.text.startsWith('#if')) {
+            var { endIndex: index2, map: map2 } = handleConditionals(tokens, index2)
+            map[condition].push(map2)
+        // not nested (change of condition)
+        } else if (token.text.startsWith('#else') ||token.text.startsWith('#elif')) {
+            condition = tokens[index2]
+        // close
+        } else if (token.text.startsWith('#endif')) {
+            return { endIndex: index2, map }
+        } else {
+            map[c].push(tokens[index2])
+        }
+    }
+    console.warn(`unmatched #if/#endif at ${tokens[index].path}:${tokens[index].startLine}`)
+    return { endIndex: index2, map }
+}
 // the recursive one
 // mutates tokens array
 export function* preprocess({ objectMacros, functionMacros, tokens, getFile, expandMacros = true }) {
