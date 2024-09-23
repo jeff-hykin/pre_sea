@@ -51,6 +51,27 @@ function handleConditionals(tokens, index) {
     console.warn(`unmatched #if/#endif at ${tokens[index].path}:${tokens[index].startLine}`)
     return { endIndex: index2, map }
 }
+
+function evalCondition({token, objectMacros, functionMacros}) {
+    if (token.text == '#else') {
+        return true
+    }
+    if (token.text.match(/^#ifn?def/)) {
+        // FIXME: test what this is supposed to do for built-in macros
+        const out = objectMacros[ token.text.slice(match[0].length,).trim() ]
+        if (token.text.startsWith("ifn")) {
+            return !out
+        }
+        return !!out
+    } else if (token.text.match(/#(el)?if/)) {
+        throw Error(`Unimplemented #if/#elif`)
+        // TODO full on eval machine with macro expansion
+        // https://gcc.gnu.org/onlinedocs/cpp/If.html
+    } else {
+        throw Error(`Can't preprocessor-eval token: ${token.text}`)
+    }
+}
+
 // the recursive one
 // mutates tokens array
 export function* preprocess({ objectMacros, functionMacros, tokens, getFile, expandMacros = true }) {
