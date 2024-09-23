@@ -1,6 +1,6 @@
 import { toRepresentation } from "https://deno.land/x/good@1.7.1.1/flattened/to_representation.js"
 import { escapeRegexMatch } from "https://deno.land/x/good@1.7.1.1/flattened/escape_regex_match.js"
-import { tokenize, kinds } from "./tokenize.js"
+import { tokenize, kinds, numberPatternStart } from "./tokenize.js"
 const Path = await import('https://deno.land/std@0.117.0/path/mod.ts')
 
 // next Tasks:
@@ -305,11 +305,24 @@ function evalCondition({text, objectMacros, functionMacros}) {
             return !out
         }
         return !!out
-    } else if (text.match(/(el)?if/)) {
-        throw Error(`Unimplemented #if/#elif`)
-        // TODO full on eval machine with macro expansion
-        // https://gcc.gnu.org/onlinedocs/cpp/If.html
+    } else if (match = text.match(/(?:el)?if\s*(.+)/)) {
+        return evalCondition(match[1])
     } else {
         throw Error(`Can't preprocessor-eval token: ${text}`)
     }
+}
+
+function preprocessorEval(string, objectMacros, functionMacros) {
+    const condition = string.trim()
+    if (condition.match(/^\d+$/)) { // yes this can match octal, but for a boolean check it doesn't matter
+        return !!condition.match(/[1-9]/)
+    } else if (match = condition.match(numberPatternStart) && match.length == condition.length) {
+        const baseNumber = match.replace(/(?:^0x|^0b|p|\.)/g,"").replace(/[eE].+/,"")
+        // TODO: make sure this shortcut allways works for correctly formatted numbers
+        //       (it will definitely give junk results for invalid numbers (ex: 0x1.2))
+        return !!baseNumber.match(/[1-9a-fA-F]/)
+    }
+    throw Error(`Unimplemented #if/#elif`)
+    // TODO full on eval machine with macro expansion
+    // https://gcc.gnu.org/onlinedocs/cpp/If.html
 }

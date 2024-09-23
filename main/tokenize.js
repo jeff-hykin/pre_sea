@@ -22,7 +22,7 @@ export const directivePatternStart = /^[ \t]*#.+/
 export const whitespacePatternStart = /^[ \t\n\r]+/
 // number literal (straight from the spec)
 // "optional period, a required decimal digit, and then continue with any sequence of letters, digits, underscores, periods, and exponents. Exponents are the two-character sequences ‘e+’, ‘e-’, ‘E+’, ‘E-’, ‘p+’, ‘p-’, ‘P+’, and ‘P-’ "
-export const numberPattern = /\.?[0-9](?:[0-9a-zA-Z_\.]|[eEpP][-+])*/
+export const numberPattern = /\.?[0-9](?:[0-9a-zA-Z_\.]|[eEpP][-+])*/ // FIXME: check if single char literals are allowed as spacers
 export const numberPatternStart = /^\.?[0-9](?:[0-9a-zA-Z_\.]|[eEpP][-+])*/
 export const identifierPattern = /(?:[a-zA-Z_]|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})(?:[a-zA-Z0-9_]|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*/
 export const identifierPatternStart = /^(?:[a-zA-Z_]|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})(?:[a-zA-Z0-9_]|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*/
