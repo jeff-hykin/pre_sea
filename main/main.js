@@ -26,17 +26,18 @@ const specialMacros = [
 ]
 // the recursive one
 // mutates tokens array
-export function expansion({ objectMacros, functionMacros, tokens, getFile }) {
+export function* preprocess({ objectMacros, functionMacros, tokens, getFile, expandMacros = true }) {
     let tokenIndex = 0
     while (tokenIndex < tokens.length) {
         const token = tokens[tokenIndex]
         // pass along as-is
         if (neutralKinds.includes(token.kind)) {
+            yield token
             tokenIndex++
             continue
         }
         
-        if (token.kind == kinds.identifier) {
+        if (expandMacros && token.kind == kinds.identifier) {
             
             // see: https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html
             if (specialMacros.includes(token.text)) {
@@ -52,6 +53,7 @@ export function expansion({ objectMacros, functionMacros, tokens, getFile }) {
                     token.text = String(token.startLine-1)
                 }
                 // FIXME: other special macros expansion
+                yield token
                 tokenIndex++
                 continue
             }
@@ -61,6 +63,7 @@ export function expansion({ objectMacros, functionMacros, tokens, getFile }) {
             if (objectMacros[token.text]) {
                 // replace token with list of replacement tokens
                 tokens[tokenIndex] = objectMacros[token.text]
+                yield token
                 tokenIndex++
                 continue
             }
@@ -113,6 +116,7 @@ export function expansion({ objectMacros, functionMacros, tokens, getFile }) {
             }
             
             // if we get here, then we didn't find a function macro
+            yield token
             tokenIndex++
             continue
         }
@@ -143,7 +147,6 @@ export function expansion({ objectMacros, functionMacros, tokens, getFile }) {
                     objectMacros[macroName] = tokenize({ string: macroBody, path: token.path, startLine: token.startLine })
                 }
                 tokens[tokenIndex] = []
-                tokenIndex++
             } else if (directive == 'include') {
                 const includeRawTarget = remainingText.trim()
                 const quoteIncludeTarget = includeRawTarget.startsWith('"') && includeRawTarget.endsWith('"')
@@ -183,14 +186,15 @@ export function expansion({ objectMacros, functionMacros, tokens, getFile }) {
             } else {
                 return Error(`Bad directive: ${token.text}`)
             }
-
+            
+            yield token
             tokenIndex++
             continue
         }
 
         // no transformation
+        yield token
         tokenIndex++
         continue
     }
-    return tokens.flat(Infinity)
 }
