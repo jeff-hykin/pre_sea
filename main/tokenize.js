@@ -13,7 +13,8 @@ export const kinds = Object.freeze({
     string: 5,
     identifier: 6,
     punctuation: 7,
-    other: 8,
+    macroOperator: 8,
+    other: 9,
 })
 
 export const directivePatternStart = /^[ \t]*#.+/
@@ -179,6 +180,8 @@ export const tokenize = ({string, path, startLine=1}) => {
             kind = kinds.identifier
         } else if (match = string.match(punctuationRegexStart)) {
             kind = kinds.punctuation
+        } else if (match = string.match(/##?/)) {
+            kind = kinds.macroOperator
         } else if (match = string.match(/.+/)) {
             kind = kinds.other
         } else if (string.length == 0) {
