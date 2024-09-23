@@ -86,6 +86,9 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
             continue
         }
         
+        // 
+        // macro expansion
+        // 
         if (expandMacros && token.kind == kinds.identifier) {
             
             // see: https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html
@@ -170,11 +173,19 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
             continue
         }
         
-        // only one left (that needs transforming) is directive
+        // 
+        // 
+        // directives
+        // 
+        // 
         if (token.kind == kinds.directive) {
             const match = token.text.match(/\s*\#\s*(\w*)/)
             const directive = match[1]
             const remainingText = token.text.slice(match[0].length)
+            
+            // 
+            // macros
+            // 
             if (directive == 'define') {
                 // TODO: unicode and other weird names that are allowed
                 const macroNameMatch = remainingText.match(/\s*(\w+)(\(.*\))?(.+)/) || []
@@ -196,6 +207,9 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
                     objectMacros[macroName] = tokenize({ string: macroBody, path: token.path, startLine: token.startLine })
                 }
                 tokens[tokenIndex] = []
+            // 
+            // includes
+            // 
             } else if (directive == 'include') {
                 const includeRawTarget = remainingText.trim()
                 const quoteIncludeTarget = includeRawTarget.startsWith('"') && includeRawTarget.endsWith('"')
@@ -211,6 +225,7 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
                     // FIXME: do the proper lookup 
                     // newString = getFile(includeTarget)
                     // fullPath = includeTarget
+                    throw Error(`Unimplemented angle include: ${token.text}`)
                 }
                 if (!newString) {
                     return Error(`Bad include directive: ${token.path}:${token.startLine}`)
@@ -223,12 +238,21 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
                 })
                 // TODO: may need to add a #line directive
                 tokens.splice(tokenIndex, 1, ...newTokens)
+            // 
+            // conditionals
+            // 
             } else if (directive == 'if' || directive == 'ifdef' || directive == 'ifndef' || directive == 'elif' || directive == 'else' || directive == 'endif') {
                 // FIXME: if/elif/else/endif
                     // need full compile time eval logic here
                     // needs to read ahead a bunch and effectively delete the closing endif/else/elif
+            // 
+            // pragma
+            // 
             } else if (directive == 'pragma') {
+                throw Error(`Unimplemented pragma: ${token.text}`)
                 // FIXME: pragma
+            } else if (directive == 'embed') {
+                throw Error(`Unimplemented embed: ${token.text}`)
             } else if (directive == 'line') {
                 // ignore it for now
                 // TODO: consider a better way to handle this
