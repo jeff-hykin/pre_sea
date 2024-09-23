@@ -1,3 +1,4 @@
+import { toRepresentation } from "https://deno.land/x/good@1.7.1.1/flattened/to_representation.js"
 import { escapeRegexMatch } from "https://deno.land/x/good@1.7.1.1/flattened/escape_regex_match.js"
 import { tokenize, kinds } from "./tokenize.js"
 const Path = await import('https://deno.land/std@0.117.0/path/mod.ts')
@@ -25,65 +26,16 @@ const specialMacros = [
     "__ASSEMBLER__",
 ]
 
-// TODO: it should be possible to do with without copying a bunch of tokens (wasted memory)
-function handleConditionals(tokens, index) {
-    let map = {}
-    let condition = tokens[index]
-    map[condition] = []
-    let index2 = index
-    // note the first token is effectively skipped
-    while (++index2 < tokens.length) {
-        const token = tokens[index2].replace(/\s*#\s*/g, '')
-        // nested (handles #if #ifdef #ifndef)
-        if (token.text.startsWith('if')) {
-            var { endIndex: index2, map: map2 } = handleConditionals(tokens, index2)
-            map[condition].push(map2)
-        // not nested (change of condition)
-        } else if (token.text.startsWith('else') ||token.text.startsWith('elif')) {
-            condition = tokens[index2]
-        // close
-        } else if (token.text.startsWith('endif')) {
-            return { endIndex: index2, map }
-        } else {
-            map[c].push(tokens[index2])
-        }
-    }
-    console.warn(`unmatched #if/#endif at ${tokens[index].path}:${tokens[index].startLine}`)
-    return { endIndex: index2, map }
-}
-
-function evalCondition({token, objectMacros, functionMacros}) {
-    const text = token.text.replace(/\s*#\s*/g, '')
-    if (text == '#else') {
-        return true
-    }
-    if (text.match(/^ifn?def/)) {
-        // FIXME: test what this is supposed to do for built-in macros
-        const out = objectMacros[ text.slice(match[0].length,).trim() ]
-        if (text.startsWith("ifn")) {
-            return !out
-        }
-        return !!out
-    } else if (text.match(/(el)?if/)) {
-        throw Error(`Unimplemented #if/#elif`)
-        // TODO full on eval machine with macro expansion
-        // https://gcc.gnu.org/onlinedocs/cpp/If.html
-    } else {
-        throw Error(`Can't preprocessor-eval token: ${text}`)
-    }
-}
-
 // the recursive one
 // mutates tokens array
 export function* preprocess({ objectMacros, functionMacros, tokens, getFile, expandMacros = true }) {
-    let tokenIndex = 0
-    while (tokenIndex < tokens.length) {
+    var tokenIndex = 0
+    // basically a wrapper so that we can process yielded tokens
+    function nextToken({ tokenIndex }) {
         const token = tokens[tokenIndex]
         // pass along as-is
         if (neutralKinds.includes(token.kind)) {
-            yield token
-            tokenIndex++
-            continue
+            return true
         }
         
         // 
@@ -105,9 +57,7 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
                     token.text = String(token.startLine-1)
                 }
                 // FIXME: other special macros expansion
-                yield token
-                tokenIndex++
-                continue
+                return true 
             }
 
 
@@ -115,9 +65,7 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
             if (objectMacros[token.text]) {
                 // replace token with list of replacement tokens
                 tokens[tokenIndex] = objectMacros[token.text]
-                yield token
-                tokenIndex++
-                continue
+                return true 
             }
             
             // TODO: test this out
@@ -163,14 +111,26 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
                 // then we found one
                 if (foundCloseParen) {
                     // FIXME: function macro expansion
-                    continue
+                    throw Error(`Unimplemented function macro expansion: ${token.text}`)
                 }
             }
             
             // if we get here, then we didn't find a function macro
-            yield token
-            tokenIndex++
-            continue
+            return true 
+        }
+
+        // 
+        // conditional map (leftover from #if/#elif/#else/#ifdef/#ifndef)
+        // 
+        if (token.kind == kinds.conditionalMap) {
+            for (const [condition, consequence] of Object.entries(token.map)) {
+                if (evalCondition({text: condition, objectMacros, functionMacros})) {
+                    tokens.splice(tokenIndex, 1, ...consequence)
+                    return false
+                }
+            }
+            tokens.splice(tokenIndex, 1)
+            return false
         }
         
         // 
@@ -194,7 +154,7 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
                 const macroBody = macroNameMatch[3]
 
                 if (!macroName || !macroBody) {
-                    return Error(`Bad define directive: ${token.path}:${token.startLine}`)
+                    throw Error(`Bad define directive: ${token.path}:${token.startLine}`)
                 }
 
                 if (macroArgs) {
@@ -228,46 +188,113 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
                     throw Error(`Unimplemented angle include: ${token.text}`)
                 }
                 if (!newString) {
-                    return Error(`Bad include directive: ${token.path}:${token.startLine}`)
+                    throw Error(`Bad include directive: ${token.path}:${token.startLine}`)
                 }
-                const newTokens = expansion({
+                const newTokens = preprocess({
                     objectMacros,
                     functionMacros,
                     tokens: tokenize({ string: newString, path: fullPath }), 
-                    getFile 
+                    getFile,
+                    expandMacros,
                 })
                 // TODO: may need to add a #line directive
                 tokens.splice(tokenIndex, 1, ...newTokens)
-            // 
+                return false
+            //
             // conditionals
-            // 
-            } else if (directive == 'if' || directive == 'ifdef' || directive == 'ifndef' || directive == 'elif' || directive == 'else' || directive == 'endif') {
-                // FIXME: if/elif/else/endif
-                    // need full compile time eval logic here
-                    // needs to read ahead a bunch and effectively delete the closing endif/else/elif
+            //
+            } else if (directive == 'endif') {
+                console.warn(`Encountered unmatched #endif at ${token.path}:${token.startLine}`)
+            } else if (directive.startsWith("if") || directive.startsWith("el")) {
+                const metaToken = handleConditionals(tokens, tokenIndex)
+                const totalTokensConsumed = (metaToken.endIndex+1)-tokenIndex
+                tokens.splice(tokenIndex, totalTokensConsumed, metaToken)
+                return false
             // 
             // pragma
             // 
             } else if (directive == 'pragma') {
-                throw Error(`Unimplemented pragma: ${token.text}`)
+                throw Error(`Unimplemented (pragma) ${token.text}`)
                 // FIXME: pragma
             } else if (directive == 'embed') {
-                throw Error(`Unimplemented embed: ${token.text}`)
+                throw Error(`Unimplemented (embed) ${token.text}`)
             } else if (directive == 'line') {
                 // ignore it for now
                 // TODO: consider a better way to handle this
             } else {
-                return Error(`Bad directive: ${token.text}`)
+                throw Error(`Bad directive: ${token.text}`)
             }
             
-            yield token
-            tokenIndex++
-            continue
+            return true
         }
-
+        
         // no transformation
-        yield token
-        tokenIndex++
-        continue
+        return true
+    }
+
+    while (tokenIndex < tokens.length) {
+        if (nextToken({ tokenIndex })) {
+            const token = tokens[tokenIndex]
+            tokenIndex += 1
+            // flatten as needed
+            if (token instanceof Array) {
+                for (const each of token) {
+                    yield each
+                }
+            } else {
+                yield token
+            }
+        }
+    }
+}
+
+// TODO: it should be possible to do with without copying a bunch of tokens (wasted memory)
+function handleConditionals(tokens, index) {
+    let map = {}
+    let condition = tokens[index].text
+    map[condition] = []
+    var index2 = index
+    // note the first token is effectively skipped
+    while (++index2 < tokens.length) {
+        const token = tokens[index2].text.replace(/\s*#\s*/g, '')
+        // nested (handles #if #ifdef #ifndef)
+        if (token.startsWith('if')) {
+            var { endIndex: index2, map: map2 } = handleConditionals(tokens, index2)
+            map[condition].push(map2)
+        // not nested (change of condition)
+        } else if (token.startsWith('else') ||token.startsWith('elif')) {
+            condition = tokens[index2].text
+            map[condition] = []
+        // close
+        } else if (token.startsWith('endif')) {
+            return { endIndex: index2, map, kind: kinds.conditionalMap }
+        } else {
+            map[condition].push(tokens[index2])
+        }
+    }
+    console.warn(`unmatched #if/#endif at ${tokens[index].path}:${tokens[index].startLine}`)
+    return { endIndex: index2, map, kind: kinds.conditionalMap }
+}
+
+function evalCondition({text, objectMacros, functionMacros}) {
+    text = text.replace(/\s*#\s*/g, '')
+    if (text == 'else') {
+        return true
+    }
+    let match
+    if (match = text.match(/^ifn?def/)) {
+        const macroName = text.slice(match[0].length,).trim()
+        // FIXME: test what this is supposed to do for built-in macros
+        const out = objectMacros[ macroName]
+        if (text.startsWith("ifn")) {
+            return !out
+        }
+        return !!out
+    } else if (text.match(/(el)?if/)) {
+        throw Error(`Unimplemented #if/#elif`)
+        // TODO full on eval machine with macro expansion
+        // https://gcc.gnu.org/onlinedocs/cpp/If.html
+    } else {
+        throw Error(`Can't preprocessor-eval token: ${text}`)
     }
 }

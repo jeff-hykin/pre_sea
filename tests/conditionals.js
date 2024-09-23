@@ -11,7 +11,19 @@ int main() {
     scanf("%lf %lf %lf", &a, &b, &c);
     PI;
     
-    __FILE__;
+    #ifdef PI
+        __FILE__;
+        printf("im in a conditional ");
+    #else
+        printf("ITS A PROBLEM IF IM IN THE LOG FILE ");
+    #endif
+    
+    #ifdef ALKJFLKASJDLASKJD
+        printf("ITS A PROBLEM IF IM IN THE LOG FILE ");
+    #else
+        printf("im in the #else of a conditional ");
+    #endif
+
     __LINE__;
     discriminant = b * b - 4 * a * c;
 
@@ -53,6 +65,7 @@ for (const each of preprocess({
     })) {
     
     console.log(
+        "-- ",
         each
     )
 }

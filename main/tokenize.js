@@ -14,7 +14,8 @@ export const kinds = Object.freeze({
     identifier: 6,
     punctuation: 7,
     macroOperator: 8,
-    other: 9,
+    conditionalMap: 9,
+    other: 10,
 })
 
 export const directivePatternStart = /^[ \t]*#.+/
