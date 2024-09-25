@@ -3,6 +3,7 @@ import { escapeRegexMatch } from "https://deno.land/x/good@1.7.1.1/flattened/esc
 import * as yaml from "https://deno.land/std@0.168.0/encoding/yaml.ts"
 import { replacementId } from "./misc.js"
 
+// FIXME: handle error of a macro that has a string with a missing closing quote
 
 export const kinds = Object.freeze({
     _: 0,
@@ -26,6 +27,7 @@ export const numberPattern = /\.?[0-9](?:[0-9a-zA-Z_\.]|[eEpP][-+])*/ // FIXME: 
 export const numberPatternStart = /^\.?[0-9](?:[0-9a-zA-Z_\.]|[eEpP][-+])*/
 export const identifierPattern = /(?:[a-zA-Z_]|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})(?:[a-zA-Z0-9_]|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*/
 export const identifierPatternStart = /^(?:[a-zA-Z_]|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})(?:[a-zA-Z0-9_]|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*/
+export const macroStringizingIdentifierStart = /^#(?:[a-zA-Z_]|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})(?:[a-zA-Z0-9_]|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*/
 export const commentPatternStart = /^\/\/.+|\/\*([^\*]|\*[^\/])*\*\//
 export const stringPattern = /"([^\\]|\\[^"\n\r])*?"/g
 export const stringPatternStart = /^("([^\\]|\\[^"\n\r])*?")/
@@ -181,7 +183,7 @@ export const tokenize = ({string, path, startLine=1}) => {
             kind = kinds.identifier
         } else if (match = string.match(punctuationRegexStart)) {
             kind = kinds.punctuation
-        } else if (match = string.match(/##?/)) {
+        } else if ((match = string.match(/^##/)) || (match = string.match(macroStringizingIdentifierStart))) {
             kind = kinds.macroOperator
         } else if (match = string.match(/.+/)) {
             kind = kinds.other

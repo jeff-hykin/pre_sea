@@ -1,0 +1,74 @@
+--  { kind:  "whitespace", startLine:    1, endLine:    2, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "\n" }
+--  { kind:  "identifier", startLine:    2, endLine:    2, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "int" }
+--  { kind:  "whitespace", startLine:    2, endLine:    2, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: " " }
+--  { kind:  "identifier", startLine:    2, endLine:    2, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "main" }
+--  { kind: "punctuation", startLine:    2, endLine:    2, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "(" }
+--  { kind: "punctuation", startLine:    2, endLine:    2, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: ")" }
+--  { kind:  "whitespace", startLine:    2, endLine:    2, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: " " }
+--  { kind: "punctuation", startLine:    2, endLine:    2, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "{" }
+--  { kind:  "whitespace", startLine:    2, endLine:    3, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "\n    " }
+--  { kind:  "identifier", startLine:    3, endLine:    3, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "double" }
+--  { kind:  "whitespace", startLine:    3, endLine:    3, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: " " }
+--  { kind:  "identifier", startLine:    3, endLine:    3, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "a" }
+--  { kind: "punctuation", startLine:    3, endLine:    3, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "," }
+--  { kind:  "whitespace", startLine:    3, endLine:    3, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: " " }
+--  { kind:  "identifier", startLine:    3, endLine:    3, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "b" }
+--  { kind: "punctuation", startLine:    3, endLine:    3, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "," }
+--  { kind:  "whitespace", startLine:    3, endLine:    3, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: " " }
+--  { kind:  "identifier", startLine:    3, endLine:    3, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "c" }
+--  { kind: "punctuation", startLine:    3, endLine:    3, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "," }
+--  { kind:  "whitespace", startLine:    3, endLine:    3, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: " " }
+--  { kind:  "identifier", startLine:    3, endLine:    3, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "discriminant" }
+--  { kind: "punctuation", startLine:    3, endLine:    3, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "," }
+--  { kind:  "whitespace", startLine:    3, endLine:    3, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: " " }
+--  { kind:  "identifier", startLine:    3, endLine:    3, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "root1" }
+--  { kind: "punctuation", startLine:    3, endLine:    3, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "," }
+--  { kind:  "whitespace", startLine:    3, endLine:    3, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: " " }
+--  { kind:  "identifier", startLine:    3, endLine:    3, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "root2" }
+--  { kind: "punctuation", startLine:    3, endLine:    3, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "," }
+--  { kind:  "whitespace", startLine:    3, endLine:    3, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: " " }
+--  { kind:  "identifier", startLine:    3, endLine:    3, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "realPart" }
+--  { kind: "punctuation", startLine:    3, endLine:    3, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "," }
+--  { kind:  "whitespace", startLine:    3, endLine:    3, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: " " }
+--  { kind:  "identifier", startLine:    3, endLine:    3, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "imagPart" }
+--  { kind: "punctuation", startLine:    3, endLine:    3, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: ";" }
+--  { kind:  "whitespace", startLine:    3, endLine:    4, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "\n    " }
+--  { kind:  "identifier", startLine:    4, endLine:    4, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "printf" }
+--  { kind: "punctuation", startLine:    4, endLine:    4, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "(" }
+--  { kind:      "string", startLine:    4, endLine:    4, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "\"Enter coefficients a, b and c: \"" }
+--  { kind: "punctuation", startLine:    4, endLine:    4, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: ")" }
+--  { kind: "punctuation", startLine:    4, endLine:    4, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: ";" }
+--  { kind:  "whitespace", startLine:    4, endLine:    5, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "\n    " }
+--  { kind:  "identifier", startLine:    5, endLine:    5, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "scanf" }
+--  { kind: "punctuation", startLine:    5, endLine:    5, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "(" }
+--  { kind:      "string", startLine:    5, endLine:    5, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "\"%lf %lf %lf\"" }
+--  { kind: "punctuation", startLine:    5, endLine:    5, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "," }
+--  { kind:  "whitespace", startLine:    5, endLine:    5, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: " " }
+--  { kind: "punctuation", startLine:    5, endLine:    5, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "&" }
+--  { kind:  "identifier", startLine:    5, endLine:    5, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "a" }
+--  { kind: "punctuation", startLine:    5, endLine:    5, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "," }
+--  { kind:  "whitespace", startLine:    5, endLine:    5, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: " " }
+--  { kind: "punctuation", startLine:    5, endLine:    5, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "&" }
+--  { kind:  "identifier", startLine:    5, endLine:    5, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "b" }
+--  { kind: "punctuation", startLine:    5, endLine:    5, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "," }
+--  { kind:  "whitespace", startLine:    5, endLine:    5, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: " " }
+--  { kind: "punctuation", startLine:    5, endLine:    5, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "&" }
+--  { kind:  "identifier", startLine:    5, endLine:    5, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "c" }
+--  { kind: "punctuation", startLine:    5, endLine:    5, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: ")" }
+--  { kind: "punctuation", startLine:    5, endLine:    5, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: ";" }
+--  { kind:  "whitespace", startLine:    5, endLine:    6, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "\n    " }
+--  { kind:  "identifier", startLine:    6, endLine:    6, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "PI" }
+--  { kind: "punctuation", startLine:    6, endLine:    6, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: ";" }
+--  { kind:  "whitespace", startLine:    6, endLine:    8, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "\n    \n    " }
+--  []
+--  { kind:  "whitespace", startLine:    8, endLine:   10, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "\n\n    " }
+--  { kind:  "identifier", startLine:   10, endLine:   10, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "discriminant" }
+--  { kind:  "whitespace", startLine:   10, endLine:   10, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: " " }
+--  { kind: "punctuation", startLine:   10, endLine:   10, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: "=" }
+--  { kind:  "whitespace", startLine:   10, endLine:   10, path: "/Users/jeffhykin/repos/pre_sea/logs/test.cpp", text: " " }
+error: Uncaught (in promise) ReferenceError: foundStart is not defined
+                    if (foundStart) {
+                    ^
+    at preprocess (file:///Users/jeffhykin/repos/pre_sea/main/main.js:220:21)
+    at preprocess.next (<anonymous>)
+    at file:///Users/jeffhykin/repos/pre_sea/tests/function_macros.js:40:12

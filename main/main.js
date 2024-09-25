@@ -1,6 +1,7 @@
 import { toRepresentation } from "https://deno.land/x/good@1.7.1.1/flattened/to_representation.js"
 import { escapeRegexMatch } from "https://deno.land/x/good@1.7.1.1/flattened/escape_regex_match.js"
-import { tokenize, kinds, numberPatternStart } from "./tokenize.js"
+import { zipLong as zip } from "https://deno.land/x/good@1.9.0.0/flattened/zip_long.js"
+import { tokenize, kinds, numberPatternStart, Token } from "./tokenize.js"
 const Path = await import('https://deno.land/std@0.117.0/path/mod.ts')
 
 // next Tasks:
@@ -13,6 +14,7 @@ const Path = await import('https://deno.land/std@0.117.0/path/mod.ts')
 // features todo:
     // macro function expansion basic args
     // #if with defined()
+    // #if with __has_attribute()
     // #if with operators
     // #include<>
     // the ## and # for macros
@@ -26,7 +28,8 @@ const Path = await import('https://deno.land/std@0.117.0/path/mod.ts')
     // standard macros for gcc Linux
     // embed
 
-const neutralKinds = new Set([ kinds.whitespace, kinds.comment, kinds.punctuation, kinds.string, kinds.number, kinds.other ])
+const neutralKinds = new Set([ kinds.whitespace, kinds.number, kinds.comment, kinds.string, kinds.punctuation, kinds.other ])
+const plainTextKinds = new Set([ ...neutralKinds, kinds.identifier ])
 const specialMacros = new Set([
     // see: https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html
     "__FILE__",
@@ -43,223 +46,277 @@ const specialMacros = new Set([
 
 // the recursive one
 // mutates tokens array
-export function* preprocess({ objectMacros, functionMacros, tokens, getFile, expandMacros = true }) {
-    var tokenIndex = 0
-    // basically a wrapper so that we can process yielded tokens
-    function nextToken({ tokenIndex }) {
-        const token = tokens[tokenIndex]
-        // pass along as-is
-        if (neutralKinds.has(token.kind)) {
-            return true
-        }
-        
-        // 
-        // macro expansion
-        // 
-        if (expandMacros && token.kind == kinds.identifier) {
-            
-            // see: https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html
-            if (specialMacros.has(token.text)) {
-                if (token.text == '__FILE__') {
-                    token.text = token.path
-                } else if (token.text == '__LINE__') {
-                    // TODO: test gcc/clang to see if it should be token.startLine or token.endLine
-                    //       (startLine can be different from endLine because of line continuations)
-                    // 
-                    // FIXME: I think this is wrong for nested macro expansions
-                    //        check if the token is original or from an expansion
-                    //        if from an expansion, then use the line of what the expansion replaced
-                    token.text = String(token.startLine-1)
-                }
-                // FIXME: other special macros expansion
-                return true 
-            }
-
-
-            // easy check
-            if (objectMacros[token.text]) {
-                // replace token with list of replacement tokens
-                tokens[tokenIndex] = objectMacros[token.text]
-                return true 
-            }
-            
-            // TODO: test this out
-            if (functionMacros[token.text]) {
-                let foundOpenParen = false
-                let foundCloseParen = false
-                let futureIndex = tokenIndex
-                let paraenthesisCount = 0
-                let args = [
-                    []
-                ]
-                while (++futureIndex < tokens.length) {
-                    const futureToken = tokens[futureIndex]
-                    if (futureToken.kind == kinds.whitespace || futureToken.kind == kinds.comment) {
-                        continue
-                    }
-                    if (!foundOpenParen && futureToken.kind != kinds.punctuation) {
-                        break
-                    }
-                    if (futureToken.kind == kinds.punctuation) {
-                        if (futureToken.text == '(') {
-                            foundOpenParen = true
-                            paraenthesisCount += 1
-                            continue
-                        }
-                        if (futureToken.text == ')') {
-                            foundCloseParen = true
-                            paraenthesisCount -= 1
-                            if (paraenthesisCount <= 0) {
-                                break
-                            }
-                            continue
-                        }
-                        if (futureToken.text == ',') {
-                            // TODO: should add checking here for borked parentheses
-                            args.push([])
-                        }
-                    }
-                    if (foundOpenParen) {
-                        args[args.length-1].push(futureToken)
-                    }
-                }
-                // then we found one
-                if (foundCloseParen) {
-                    // FIXME: function macro expansion
-                    throw Error(`Unimplemented function macro expansion: ${token.text}`)
-                }
-            }
-            
-            // if we get here, then we didn't find a function macro
-            return true 
-        }
-
-        // 
-        // conditional map (leftover from #if/#elif/#else/#ifdef/#ifndef)
-        // 
-        if (token.kind == kinds.conditionalMap) {
-            for (const [condition, consequence] of Object.entries(token.map)) {
-                if (evalCondition({text: condition, objectMacros, functionMacros})) {
-                    tokens.splice(tokenIndex, 1, ...consequence)
-                    return false
-                }
-            }
-            tokens.splice(tokenIndex, 1)
-            return false
-        }
-        
-        // 
-        // 
-        // directives
-        // 
-        // 
-        if (token.kind == kinds.directive) {
-            const match = token.text.match(/\s*\#\s*(\w*)/)
-            const directive = match[1]
-            const remainingText = token.text.slice(match[0].length)
-            
-            // 
-            // macros
-            // 
-            if (directive == 'define') {
-                // TODO: unicode and other weird names that are allowed
-                const macroNameMatch = remainingText.match(/\s*(\w+)(\(.*\))?(.+)/) || []
-                const macroName = macroNameMatch[1]
-                const macroArgs = macroNameMatch[2]
-                const macroBody = macroNameMatch[3]
-
-                if (!macroName || !macroBody) {
-                    throw Error(`Bad define directive: ${token.path}:${token.startLine}`)
-                }
-
-                if (macroArgs) {
-                    // FUTURE: add warning for redefinition
-                    functionMacros[macroName] = {
-                        args: macroArgs.slice(1, -1).split(',').map(each=>each.trim()),
-                        body: tokenize({ string: macroBody, path: token.path, startLine: token.startLine }),
-                    }
-                } else {
-                    objectMacros[macroName] = tokenize({ string: macroBody, path: token.path, startLine: token.startLine })
-                }
-                tokens[tokenIndex] = []
-            // 
-            // includes
-            // 
-            } else if (directive == 'include') {
-                const includeRawTarget = remainingText.trim()
-                const quoteIncludeTarget = includeRawTarget.startsWith('"') && includeRawTarget.endsWith('"')
-                const angleIncludeTarget = includeRawTarget.startsWith('<') && includeRawTarget.endsWith('>')
-                const includeTarget = includeRawTarget.slice(1, -1)
-                let newString = ""
-                let fullPath
-                if (quoteIncludeTarget) {
-                    // FIXME: probably need to add like `${parentPath(token.path)}/${includeTarget}`
-                    fullPath = `${Path.dirname(token.path)}/${includeTarget}`
-                    newString = getFile(fullPath)
-                } else if (angleIncludeTarget) {
-                    // FIXME: do the proper lookup 
-                    // newString = getFile(includeTarget)
-                    // fullPath = includeTarget
-                    throw Error(`Unimplemented angle include: ${token.text}`)
-                }
-                if (!newString) {
-                    throw Error(`Bad include directive: ${token.path}:${token.startLine}`)
-                }
-                const newTokens = preprocess({
-                    objectMacros,
-                    functionMacros,
-                    tokens: tokenize({ string: newString, path: fullPath }), 
-                    getFile,
-                    expandMacros,
-                })
-                // TODO: may need to add a #line directive
-                tokens.splice(tokenIndex, 1, ...newTokens)
-                return false
-            //
-            // conditionals
-            //
-            } else if (directive == 'endif') {
-                console.warn(`Encountered unmatched #endif at ${token.path}:${token.startLine}`)
-            } else if (directive.startsWith("if") || directive.startsWith("el")) {
-                const metaToken = handleConditionals(tokens, tokenIndex)
-                const totalTokensConsumed = (metaToken.endIndex+1)-tokenIndex
-                tokens.splice(tokenIndex, totalTokensConsumed, metaToken)
-                return false
-            // 
-            // pragma
-            // 
-            } else if (directive == 'pragma') {
-                throw Error(`Unimplemented (pragma) ${token.text}`)
-                // FIXME: pragma
-            } else if (directive == 'embed') {
-                throw Error(`Unimplemented (embed) ${token.text}`)
-            } else if (directive == 'line') {
-                // ignore it for now
-                // TODO: consider a better way to handle this
-            } else {
-                throw Error(`Bad directive: ${token.text}`)
-            }
-            
-            return true
-        }
-        
-        // no transformation
-        return true
-    }
-
+export function* preprocess({ objectMacros, functionMacros, tokens, getFile, expandTextMacros = true, tokenIndex = 0 }) {
     while (tokenIndex < tokens.length) {
-        if (nextToken({ tokenIndex })) {
+        // this while(1) is only here to break/continue off of
+        process_current_token: while(1) {
             const token = tokens[tokenIndex]
-            tokenIndex += 1
-            // flatten as needed
-            if (token instanceof Array) {
-                for (const each of token) {
-                    yield each
+            
+            // 
+            // flatten
+            // 
+                // flatten conditional map (leftover from #if/#elif/#else/#ifdef/#ifndef)
+                if (token.kind == kinds.conditionalMap) {
+                    for (const [condition, consequence] of Object.entries(token.map)) {
+                        if (evalCondition({text: condition, objectMacros, functionMacros})) {
+                            tokens.splice(tokenIndex, 1, ...consequence)
+                            continue process_current_token
+                        }
+                    }
+                    tokens.splice(tokenIndex, 1)
+                    continue process_current_token
                 }
-            } else {
-                yield token
+            
+            // 
+            // 
+            // directives
+            // 
+            // 
+                if (token.kind == kinds.directive) {
+                    const match = token.text.match(/\s*\#\s*(\w*)/)
+                    const directive = match[1]
+                    const remainingText = token.text.slice(match[0].length)
+                    
+                    // 
+                    // macros
+                    // 
+                    if (directive == 'define') {
+                        // TODO: unicode and other weird names that are allowed
+                        const macroNameMatch = remainingText.match(/\s*(\w+)(\(.*?\))?(.+)/) || []
+                        const macroName = macroNameMatch[1]
+                        const macroArgs = macroNameMatch[2]
+                        const macroBody = macroNameMatch[3]
+
+                        if (!macroName || !macroBody) {
+                            throw Error(`Bad define directive: ${token.path}:${token.startLine}`)
+                        }
+                        
+                        if (macroArgs) {
+                            const body = tokenize({ string: macroBody, path: token.path, startLine: token.startLine })
+                            if (body.length > 0) {
+                                if (body[0].text == "##" || body.slice(-1)[0].text == "##") {
+                                    throw Error(`Function macro ${token.text} on ${token.path}:${token.startLine} has ## at the end or beginning (which is invalid)`)
+                                }
+                            }
+                            // FUTURE: add warning for redefinition
+                            functionMacros[macroName] = {
+                                args: macroArgs.slice(1, -1).split(',').map(each=>each.trim()),
+                                body,
+                            }
+                        } else {
+                            objectMacros[macroName] = tokenize({ string: macroBody, path: token.path, startLine: token.startLine })
+                        }
+                        tokens[tokenIndex] = []
+                    // 
+                    // includes
+                    // 
+                    } else if (directive == 'include') {
+                        const includeRawTarget = remainingText.trim()
+                        const quoteIncludeTarget = includeRawTarget.startsWith('"') && includeRawTarget.endsWith('"')
+                        const angleIncludeTarget = includeRawTarget.startsWith('<') && includeRawTarget.endsWith('>')
+                        const includeTarget = includeRawTarget.slice(1, -1)
+                        let newString = ""
+                        let fullPath
+                        if (quoteIncludeTarget) {
+                            // FIXME: probably need to add like `${parentPath(token.path)}/${includeTarget}`
+                            fullPath = `${Path.dirname(token.path)}/${includeTarget}`
+                            newString = getFile(fullPath)
+                        } else if (angleIncludeTarget) {
+                            // FIXME: do the proper lookup 
+                            // newString = getFile(includeTarget)
+                            // fullPath = includeTarget
+                            throw Error(`Unimplemented angle include: ${token.text}`)
+                        }
+                        if (!newString) {
+                            throw Error(`Bad include directive: ${token.path}:${token.startLine}`)
+                        }
+                        const newTokens = preprocess({
+                            objectMacros,
+                            functionMacros,
+                            tokens: tokenize({ string: newString, path: fullPath }), 
+                            getFile,
+                            expandTextMacros: true, // TODO: check if this is correct
+                        })
+                        // TODO: may need to add a #line directive here
+                        tokens.splice(tokenIndex, 1, ...newTokens)
+                        continue process_current_token
+                    //
+                    // conditionals
+                    //
+                    } else if (directive == 'endif') {
+                        console.warn(`Encountered unmatched #endif at ${token.path}:${token.startLine}`)
+                    } else if (directive.startsWith("if") || directive.startsWith("el")) {
+                        const metaToken = handleConditionals(tokens, tokenIndex)
+                        const totalTokensConsumed = (metaToken.endIndex+1)-tokenIndex
+                        tokens.splice(tokenIndex, totalTokensConsumed, metaToken)
+                        continue process_current_token
+                    // 
+                    // pragma
+                    // 
+                    } else if (directive == 'pragma') {
+                        throw Error(`Unimplemented (pragma) ${token.text}`)
+                        // FIXME: pragma
+                    } else if (directive == 'embed') {
+                        throw Error(`Unimplemented (embed) ${token.text}`)
+                    } else if (directive == 'line') {
+                        // ignore it for now
+                        // TODO: consider a better way to handle this
+                    } else {
+                        throw Error(`Bad directive: ${token.text}`)
+                    }
+                    
+                    break process_current_token
+                }
+
+            // 
+            // 
+            // macro expansion
+            // 
+            // 
+            if (expandTextMacros && token.kind == kinds.identifier) {
+                // 
+                // special macros
+                // 
+                // see: https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html
+                if (specialMacros.has(token.text)) {
+                    if (token.text == '__FILE__') {
+                    } else if (token.text == '__LINE__') {
+                        // TODO: test gcc/clang to see if it should be token.startLine or token.endLine
+                        //       (startLine can be different from endLine because of line continuations)
+                        // 
+                        // FIXME: I think this is wrong for nested macro expansions
+                        //        check if the token is original or from an expansion
+                        //        if from an expansion, then use the line of what the expansion replaced
+                        token.text = String(token.startLine-1)
+                    }
+                    // FIXME: other special macros expansion
+                    break process_current_token
+                }
+                
+                // 
+                // object macros
+                // 
+                if (objectMacros[token.text]) {
+                    tokens.splice(tokenIndex, 1, ...objectMacros[token.text])
+                    break process_current_token
+                }
+                
+                // 
+                // function macros
+                // 
+                if (functionMacros[token.text]) {
+                    let futureTokenIndex = tokenIndex
+                    while (++futureTokenIndex < tokens.length) {
+                        const each = tokens[tokenIndex]
+                        if (each.text == "(") {
+                            foundStart = true
+                            break
+                        } else if (each.kind == kinds.whitespace || each.kind == kinds.comment) {
+                            continue
+                        } else {
+                            break
+                        }
+                    }
+                    if (foundStart) {
+                        console.log(`found start of function macro: ${token.text}`)
+                        // // make a copy incase of mutation
+                        // const macroInfo = {
+                        //     ...functionMacros[token.text],
+                        //     body: functionMacros[token.text].body.slice(),
+                        // }
+                        // let foundOpenParen = false
+                        // let foundCloseParen = false
+                        // let extraParaenthesisCount = 0
+                        // let indexToResumeOn = tokenIndex
+                        // const args = [
+                        //     []
+                        // ]
+                        
+                        // // NOTE: we're still not sure if this is a call or not
+                        // for (const each of preprocess({ objectMacros, functionMacros, tokens, getFile, expandTextMacros: false, tokenIndex })) {
+                        //     if (each.kind == kinds.whitespace) {
+                        //         args.push(each)
+                        //         continue
+                        //     }
+                        //     // 
+                        //     // start check
+                        //     // 
+                        //     if (!foundOpenParen) {
+                        //         if (each.text != "(") {
+                        //             break function_macro
+                        //         } else {
+                        //             foundOpenParen = true
+                        //             continue
+                        //         }
+                        //     }
+
+                        //     // 
+                        //     // balace & end check
+                        //     //
+                        //     if (each.text == "(") {
+                        //         args.push([ each ])
+                        //         extraParaenthesisCount += 1
+                        //     } else if (each.text == ")") {
+                        //         if (extraParaenthesisCount == 0) {
+                        //             break
+                        //         } else {
+                        //             args.slice(-1).push(each)
+                        //             extraParaenthesisCount -= 1
+                        //         }
+                        //     } else if (each.text == ",") {
+                        //         args.push([])
+                        //     } else {
+                        //         args.slice(-1).push(each)
+                        //     }
+                        // }
+                        
+                        // if (args.length != macroInfo.args.length) {
+                        //     break function_macro
+                        // }
+                        
+                        // // FIXME: check for stringized args or concat args
+                        // const argNameToTokens = Object.fromEntries(zip(macroInfo.args, args))
+                        // const concats = args.filter(each=>each.text == "##")
+                        // const stringizing = args.filter(each=>each.text != "##" && each.text.startsWith("#"))
+                        // const newBodyTokens = []
+                        // for (const eachToken of macroInfo.body) {
+                        //     if (eachToken.kind == kinds.macroOperator) {
+                        //         if (eachToken.text == "##") {
+                        //             // FIXME: do concat operation
+                        //             throw Error(`Unimplemented ## concat`)
+                        //         } else if (eachToken.text.startsWith("#")) {
+                        //             const argName = eachToken.text.slice(1,)
+                        //             let text = argNameToTokens[argName].map(each=>each.text).join("")
+                        //             // TODO: check that the startLine/endLine of this token makes sense
+                        //             // need to C escape text
+                        //             const replacementToken = new Token({kind: kinds.string, text: `"${escapeCString(text)}"`, path: eachToken.path, startLine: eachToken.startLine, endLine: eachToken.endLine})
+                        //             newBodyTokens.push(replacementToken)
+                        //         } else {
+                        //             newBodyTokens.push(eachToken)
+                        //         }
+                        //     }
+                        // }
+
+                        // FIXME: check for varargs
+                        // then check for varargs
+                        // FIXME: expand/replace normal args
+                        // * I think then run another expansion pass on the output
+                        // unclear if concat can concat to a macro name that then gets expanded by the second pass
+                    }
+                }
+                
+                // if we get here, then we found a normal identifier
+                break process_current_token
             }
+            
+            // if we get here, there's no transformation needed
+            break
         }
+        if (tokens[tokenIndex].kind == kinds.conditionalMap) {
+            throw Error(`This should never happen yielding a conditional map meta-token`)
+        }
+        yield tokens[tokenIndex]
+        tokenIndex += 1
     }
 }
 
@@ -325,4 +382,23 @@ function preprocessorEval(string, objectMacros, functionMacros) {
     throw Error(`Unimplemented #if/#elif`)
     // TODO full on eval machine with macro expansion
     // https://gcc.gnu.org/onlinedocs/cpp/If.html
+}
+
+// TODO: validate this more thoroughly, especially for unicode
+function escapeCString(string) {
+    // (\n|\r|\t|v|\\|'|"|\?)
+    return string.replace(/(\\|\n|\r|\t|\v|'|"|\?|\0)/g, (matchText)=>{
+        switch (matchText) {
+            case "\\": return "\\\\"
+            case "\n": return "\\n"
+            case "\r": return "\\r"
+            case "\t": return "\\t"
+            case "\v": return "\\v"
+            case "'": return "\\'"
+            case '"': return '\\"'
+            case "?": return "\\?"
+            case "\0": return "\\0"
+            default: return matchText
+        }
+    })
 }
