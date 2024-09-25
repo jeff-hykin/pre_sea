@@ -182,6 +182,8 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
                     // see: https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html
                     if (specialMacros.has(token.text)) {
                         if (token.text == '__FILE__') {
+                            // FIXME: make a new token object
+                            token.text = `"${escapeCString(token.path)}"`
                         } else if (token.text == '__LINE__') {
                             // TODO: test gcc/clang to see if it should be token.startLine or token.endLine
                             //       (startLine can be different from endLine because of line continuations)
@@ -191,8 +193,7 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
                             //        if from an expansion, then use the line of what the expansion replaced
                             token.text = String(token.startLine-1)
                         }
-                        // FIXME: other special macros expansion
-                        return true
+                        return false
                     }
                     
                     // 
