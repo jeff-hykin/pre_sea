@@ -47,10 +47,170 @@ const specialMacros = new Set([
 // the recursive one
 // mutates tokens array
 export function* preprocess({ objectMacros, functionMacros, tokens, getFile, expandTextMacros = true, tokenIndex = 0 }) {
+    const identifierTransformation = (tokens, tokenIndex)=>{
+        if (expandTextMacros) {
+            const token = tokens[tokenIndex]
+            // 
+            // special macros
+            // 
+            // see: https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html
+            if (specialMacros.has(token.text)) {
+                if (token.text == '__FILE__') {
+                    // FIXME: make a new token object
+                    token.text = `"${escapeCString(token.path)}"`
+                } else if (token.text == '__LINE__') {
+                    // TODO: test gcc/clang to see if it should be token.startLine or token.endLine
+                    //       (startLine can be different from endLine because of line continuations)
+                    // 
+                    // FIXME: I think this is wrong for nested macro expansions
+                    //        check if the token is original or from an expansion
+                    //        if from an expansion, then use the line of what the expansion replaced
+                    token.text = String(token.startLine-1)
+                }
+                return 1
+            }
+            
+            //
+            // object macros
+            //
+            if (objectMacros[token.text]) {
+                tokens.splice(tokenIndex, 1, ...objectMacros[token.text])
+                // don't double expand
+                return objectMacros[token.text].length
+            }
+            
+            // 
+            // function macros
+            // 
+            if (functionMacros[token.text]) {
+                let foundStart = false
+                let futureTokenIndex = tokenIndex
+                while (++futureTokenIndex < tokens.length) {
+                    const each = tokens[futureTokenIndex]
+                    if (each.text == "(") {
+                        foundStart = true
+                        break
+                    } else if (each.kind == kinds.whitespace || each.kind == kinds.comment) {
+                        continue
+                    } else {
+                        break
+                    }
+                }
+                if (foundStart) {
+                    console.log(`found start of function macro: ${token.text}`)
+
+                    // make a copy incase of mutation
+                    const macroInfo = {
+                        ...functionMacros[token.text],
+                        body: functionMacros[token.text].body.slice(),
+                    }
+                    let foundOpenParen = false
+                    let foundCloseParen = false
+                    let extraParaenthesisCount = 0
+                    let indexToResumeOn = tokenIndex
+                    let prevArg = []
+                    const args = [
+                        prevArg,
+                    ]
+                    
+                    // NOTE: this is going to be mutatking the tokens array, but only tokens that appear after futureTokenIndex
+                    for (const eachToken of preprocess({ objectMacros, functionMacros, tokens, getFile, expandTextMacros: false, tokenIndex: futureTokenIndex+1 })) {
+                        console.debug(`eachToken is:`,eachToken)
+                        // 
+                        // balace parentheses and check for end of args
+                        //
+                        if (eachToken.text == "(") {
+                            prevArg.push(eachToken)
+                            extraParaenthesisCount += 1
+                        } else if (eachToken.text == ")") {
+                            if (extraParaenthesisCount == 0) {
+                                break
+                            } else {
+                                prevArg.push(eachToken)
+                                extraParaenthesisCount -= 1
+                            }
+                        } else if (eachToken.text == ",") {
+                            prevArg = []
+                            args.push(prevArg)
+                        } else {
+                            prevArg.push(eachToken)
+                        }
+                    }
+                    
+                    if (args.length != macroInfo.args.length) {
+                        // TODO: improve the error message
+                        throw Error(`Function macro ${token.text} has ${args.length} args but it was called with ${macroInfo.args.length} args ${JSON.stringify(args)}`)
+                    }
+                    
+                    // remove trailing and leading whitespace
+                    for (const tokenList of args) {
+                        while (tokenList[0]?.kind == kinds.whitespace) {
+                            tokenList.shift()
+                        }
+                        while (tokenList.slice(-1)[0]?.kind == kinds.whitespace) {
+                            tokenList.pop()
+                        }
+                    }
+                    
+                    // FIXME: check for stringized args or concat args
+                    const argNameToTokens = Object.fromEntries(zip(macroInfo.args, args))
+                    const concats = macroInfo.body.filter(each=>each.text == "##")
+                    const stringizing = macroInfo.body.filter(each=>each.text != "##" && each.text.startsWith("#"))
+                    const bodyTokens = [...macroInfo.body]
+                    let bodyIndex = 0
+                    while (bodyIndex < bodyTokens.length) {
+                        const eachToken = bodyTokens[bodyIndex]
+                        if (eachToken.text == "##") {
+                            // FIXME: do concat operation
+                            throw Error(`Unimplemented ## concat`)
+                        } else if (eachToken.text.startsWith("#")) {
+                            const argName = eachToken.text.slice(1,)
+                            let text = argNameToTokens[argName].map(each=>each.text).join("")
+                            // TODO: check that the startLine/endLine of this token makes sense
+                            // need to C escape text
+                            // FIXME: check if stringizing can have a string with two back to back spaces in it
+                            const replacementToken = new Token({kind: kinds.string, text: `"${escapeCString(text)}"`, path: eachToken.path, startLine: eachToken.startLine, endLine: eachToken.endLine})
+                            bodyTokens.splice(bodyIndex, 1, replacementToken)
+                            continue
+                        } else if (eachToken.kind == kinds.identifier) {
+                            if (argNameToTokens != null) {
+                                // FIXME: I think they said args are expanded before being inserted
+                                // which could make a differnce for function macros (arg name gets inserted in front of ()'s )
+                                // right now its kind of coincidentally expanded in context inside this loop
+                                bodyTokens.splice(bodyIndex, 1, ...argNameToTokens[eachToken.text])
+                                continue
+                            }
+                            bodyIndex += identifierTransformation(bodyTokens, bodyIndex)
+                            continue
+                        }
+                        bodyIndex += 1
+                    }
+                    
+                    console.debug(`bodyTokens is:`,bodyTokens)
+                    // FIXME: check for varargs
+                    // then check for varargs
+                    // FIXME: expand/replace normal args
+                    // * I think then run another expansion pass on the output
+                    // unclear if concat can concat to a macro name that then gets expanded by the second pass
+                    tokens.splice(tokenIndex, 1, ...bodyTokens)
+                    return bodyTokens.length
+                }
+            }
+            
+            // if we get here, then we found a normal identifier
+            return 1
+        }
+        return 1
+    }
+    let numberToYield = 0
     while (tokenIndex < tokens.length) {
         // this while(1) is only here to break/continue off of
         process_current_token: while(1) {
             const token = tokens[tokenIndex]
+
+            // NOTE:
+                // read "continue process_current_token" as "don't yield a token, re-evalute the (now swapped) current token"
+                // read "break process_current_token" as "yield a token, process next token"
             
             // 
             // flatten
@@ -60,11 +220,15 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
                     for (const [condition, consequence] of Object.entries(token.map)) {
                         if (evalCondition({text: condition, objectMacros, functionMacros})) {
                             tokens.splice(tokenIndex, 1, ...consequence)
-                            continue process_current_token
+                            numberToYield = 0 // needs re-evalution
+                            // console.log(`breaking: 1`)
+                            break process_current_token
                         }
                     }
                     tokens.splice(tokenIndex, 1)
-                    continue process_current_token
+                    numberToYield = 0 // needs re-evalution
+                    // console.log(`breaking: 2`)
+                    break process_current_token
                 }
             
             // 
@@ -106,7 +270,10 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
                         } else {
                             objectMacros[macroName] = tokenize({ string: macroBody, path: token.path, startLine: token.startLine })
                         }
-                        tokens[tokenIndex] = []
+                        tokens.splice(tokenIndex, 1)
+                        numberToYield = 0 // doens't need re-evaluation, but just removed itself
+                        // console.log(`breaking: 3`)
+                        break process_current_token
                     // 
                     // includes
                     // 
@@ -139,7 +306,9 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
                         })
                         // TODO: may need to add a #line directive here
                         tokens.splice(tokenIndex, 1, ...newTokens)
-                        continue process_current_token
+                        numberToYield = newTokens.length
+                        // console.log(`breaking: 4`)
+                        break process_current_token
                     //
                     // conditionals
                     //
@@ -149,7 +318,9 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
                         const metaToken = handleConditionals(tokens, tokenIndex)
                         const totalTokensConsumed = (metaToken.endIndex+1)-tokenIndex
                         tokens.splice(tokenIndex, totalTokensConsumed, metaToken)
-                        continue process_current_token
+                        numberToYield = 0 // needs re-evaluation
+                        // console.log(`breaking: 5`)
+                        break process_current_token
                     // 
                     // pragma
                     // 
@@ -161,10 +332,14 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
                     } else if (directive == 'line') {
                         // ignore it for now
                         // TODO: consider a better way to handle this
+                        numberToYield = 1
+                        // console.log(`breaking: 6`)
+                        break process_current_token
                     } else {
                         throw Error(`Bad directive: ${token.text}`)
                     }
                     
+                    // console.log(`breaking: 7`)
                     break process_current_token
                 }
 
@@ -173,174 +348,24 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
             // macro expansion
             // 
             // 
-            if (expandTextMacros && token.kind == kinds.identifier) {
-                const applyBasicExpansion = (tokens, tokenIndex) => {
-                    const token = tokens[tokenIndex]
-                    // 
-                    // special macros
-                    // 
-                    // see: https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html
-                    if (specialMacros.has(token.text)) {
-                        if (token.text == '__FILE__') {
-                            // FIXME: make a new token object
-                            token.text = `"${escapeCString(token.path)}"`
-                        } else if (token.text == '__LINE__') {
-                            // TODO: test gcc/clang to see if it should be token.startLine or token.endLine
-                            //       (startLine can be different from endLine because of line continuations)
-                            // 
-                            // FIXME: I think this is wrong for nested macro expansions
-                            //        check if the token is original or from an expansion
-                            //        if from an expansion, then use the line of what the expansion replaced
-                            token.text = String(token.startLine-1)
-                        }
-                        return false
-                    }
-                    
-                    // 
-                    // object macros
-                    // 
-                    if (objectMacros[token.text]) {
-                        tokens.splice(tokenIndex, 1, ...objectMacros[token.text])
-                        return true
-                    }
-                }
-
-                if (applyBasicExpansion(tokens, tokenIndex)) {
+                if (token.kind == kinds.identifier) {
+                    numberToYield = identifierTransformation(tokens, tokenIndex)
+                    // console.log(`breaking: 8`)
                     break process_current_token
                 }
-                
-                // 
-                // function macros
-                // 
-                if (functionMacros[token.text]) {
-                    let foundStart = false
-                    let futureTokenIndex = tokenIndex
-                    while (++futureTokenIndex < tokens.length) {
-                        const each = tokens[futureTokenIndex]
-                        if (each.text == "(") {
-                            foundStart = true
-                            break
-                        } else if (each.kind == kinds.whitespace || each.kind == kinds.comment) {
-                            continue
-                        } else {
-                            break
-                        }
-                    }
-                    if (foundStart) {
-                        console.log(`found start of function macro: ${token.text}`)
-
-                        // make a copy incase of mutation
-                        const macroInfo = {
-                            ...functionMacros[token.text],
-                            body: functionMacros[token.text].body.slice(),
-                        }
-                        let foundOpenParen = false
-                        let foundCloseParen = false
-                        let extraParaenthesisCount = 0
-                        let indexToResumeOn = tokenIndex
-                        let prevArg = []
-                        const args = [
-                            prevArg,
-                        ]
-                        
-                        // NOTE: this is going to be mutatking the tokens array, but only tokens that appear after futureTokenIndex
-                        for (const eachToken of preprocess({ objectMacros, functionMacros, tokens, getFile, expandTextMacros: false, tokenIndex: futureTokenIndex+1 })) {
-                            console.debug(`eachToken is:`,eachToken)
-                            // 
-                            // balace parentheses and check for end of args
-                            //
-                            if (eachToken.text == "(") {
-                                prevArg.push(eachToken)
-                                extraParaenthesisCount += 1
-                            } else if (eachToken.text == ")") {
-                                if (extraParaenthesisCount == 0) {
-                                    break
-                                } else {
-                                    prevArg.push(eachToken)
-                                    extraParaenthesisCount -= 1
-                                }
-                            } else if (eachToken.text == ",") {
-                                prevArg = []
-                                args.push(prevArg)
-                            } else {
-                                prevArg.push(eachToken)
-                            }
-                        }
-                        
-                        if (args.length != macroInfo.args.length) {
-                            // TODO: improve the error message
-                            throw Error(`Function macro ${token.text} has ${args.length} args but it was called with ${macroInfo.args.length} args ${JSON.stringify(args)}`)
-                        }
-                        
-                        // remove trailing and leading whitespace
-                        for (const tokenList of args) {
-                            while (tokenList[0]?.kind == kinds.whitespace) {
-                                tokenList.shift()
-                            }
-                            while (tokenList.slice(-1)[0]?.kind == kinds.whitespace) {
-                                tokenList.pop()
-                            }
-                        }
-                        
-                        // FIXME: check for stringized args or concat args
-                        const argNameToTokens = Object.fromEntries(zip(macroInfo.args, args))
-                        const concats = macroInfo.body.filter(each=>each.text == "##")
-                        const stringizing = macroInfo.body.filter(each=>each.text != "##" && each.text.startsWith("#"))
-                        const bodyTokens = [...macroInfo.body]
-                        let bodyIndex = 0
-                        while (bodyIndex < bodyTokens.length) {
-                            const eachToken = bodyTokens[bodyIndex]
-                            if (eachToken.text == "##") {
-                                // FIXME: do concat operation
-                                throw Error(`Unimplemented ## concat`)
-                            } else if (eachToken.text.startsWith("#")) {
-                                const argName = eachToken.text.slice(1,)
-                                let text = argNameToTokens[argName].map(each=>each.text).join("")
-                                // TODO: check that the startLine/endLine of this token makes sense
-                                // need to C escape text
-                                // FIXME: check if stringizing can have a string with two back to back spaces in it
-                                const replacementToken = new Token({kind: kinds.string, text: `"${escapeCString(text)}"`, path: eachToken.path, startLine: eachToken.startLine, endLine: eachToken.endLine})
-                                bodyTokens.splice(bodyIndex, 1, replacementToken)
-                                continue
-                            } else if (eachToken.kind == kinds.identifier) {
-                                if (argNameToTokens != null) {
-                                    // FIXME: I think they said args are expanded before being inserted
-                                    // which could make a differnce for function macros (arg name gets inserted in front of ()'s )
-                                    // right now its kind of coincidentally expanded in context inside this loop
-                                    bodyTokens.splice(bodyIndex, 1, ...argNameToTokens[eachToken.text])
-                                    continue
-                                }
-                                if (applyBasicExpansion(bodyTokens, bodyIndex)) {
-                                    continue
-                                }
-                                // FIXME: frick, we need to do macro function expansion here
-                            }
-                            bodyIndex += 1
-                        }
-                        
-                        console.debug(`bodyTokens is:`,bodyTokens)
-                        // FIXME: check for varargs
-                        // then check for varargs
-                        // FIXME: expand/replace normal args
-                        // * I think then run another expansion pass on the output
-                        // unclear if concat can concat to a macro name that then gets expanded by the second pass
-                        tokens.splice(tokenIndex, 1, ...bodyTokens)
-                        continue process_current_token
-                    }
-                }
-                
-                // if we get here, then we found a normal identifier
-                break process_current_token
-            }
             
-            // if we get here, there's no transformation needed
-            break
+            // if we get here, there's no token transformation needed
+            numberToYield = 1
+            // console.log(`breaking: 9`)
+            break process_current_token
         }
-        if (tokens[tokenIndex].kind == kinds.conditionalMap) {
-            throw Error(`This should never happen yielding a conditional map meta-token`)
+        while (numberToYield--) {
+            if (tokens[tokenIndex]?.kind == kinds.conditionalMap) {
+                throw Error(`This should never happen yielding a conditional map meta-token`)
+            }
+            yield tokens[tokenIndex]
+            tokenIndex += 1
         }
-        yield tokens[tokenIndex]
-        tokenIndex += 1
     }
 }
 

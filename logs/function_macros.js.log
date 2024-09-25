@@ -60,7 +60,6 @@
 --  { kind:  "identifier", startLine:    6, endLine:    6, path: "$PROJECT_ROOT/logs/test.cpp", text: "PI" }
 --  { kind: "punctuation", startLine:    6, endLine:    6, path: "$PROJECT_ROOT/logs/test.cpp", text: ";" }
 --  { kind:  "whitespace", startLine:    6, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: "\n    \n    " }
---  []
 --  { kind:  "whitespace", startLine:    8, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: "\n\n    " }
 --  { kind:  "identifier", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: "discriminant" }
 --  { kind:  "whitespace", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: " " }
