@@ -154,15 +154,55 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
                     
                     // FIXME: check for stringized args or concat args
                     const argNameToTokens = Object.fromEntries(zip(macroInfo.args, args))
-                    const concats = macroInfo.body.filter(each=>each.text == "##")
-                    const stringizing = macroInfo.body.filter(each=>each.text != "##" && each.text.startsWith("#"))
+                    const argNames = new Set(macroInfo.args)
                     const bodyTokens = [...macroInfo.body]
+                    let cleanerIndex = 0
+                    // remove all prefixing whitespace tokens for ## concats
+                    // (probably not efficent to do this before the next while loop but whatever)
+                    while (cleanerIndex < bodyTokens.length) {
+                        if (bodyTokens[cleanerIndex].kind == kinds.whitespace && bodyTokens[cleanerIndex+1].text == "##") {
+                            bodyTokens.splice(cleanerIndex, 1)
+                            continue
+                        } else if (bodyTokens[cleanerIndex].text == "##" && bodyTokens[cleanerIndex+1].kind == kinds.whitespace) {
+                            bodyTokens.splice(cleanerIndex+1, 1)
+                            continue
+                        } else {
+                            cleanerIndex += 1
+                        }
+                    }
                     let bodyIndex = 0
                     while (bodyIndex < bodyTokens.length) {
                         const eachToken = bodyTokens[bodyIndex]
                         if (eachToken.text == "##") {
-                            // FIXME: do concat operation
-                            throw Error(`Unimplemented ## concat`)
+                            // NOTE:  bodyIndex will never be 0 because of the check when the macro was defined 
+                            
+                            // TODO: this should throw errors for invalid ## concats, but thats a lot of work
+                            let prevToken = bodyTokens[bodyIndex-1]
+                            let nextToken = bodyTokens[bodyIndex+1]
+                            let prefixTokens = []
+                            let postfixTokens = []
+                            if (prevToken.kind == kinds.identifier && argNames.has(prevToken.text)) {
+                                const tokens = argNameToTokens[prevToken.text]
+                                prevToken = tokens[tokens.length-1]||new Token({kind: kinds.whitespace, text: " ", path: eachToken.path, startLine: eachToken.startLine, endLine: eachToken.endLine})
+                                prefixTokens = tokens.slice(0, -1)
+                            }
+                            if (nextToken.kind == kinds.identifier && argNames.has(nextToken.text)) {
+                                const tokens = argNameToTokens[nextToken.text]
+                                nextToken = tokens[0]||new Token({kind: kinds.whitespace, text: " ", path: eachToken.path, startLine: eachToken.startLine, endLine: eachToken.endLine})
+                                postfixTokens = tokens.slice(1)
+                            }
+                            const newToken = new Token({
+                                kind: [prevToken.kind, nextToken.kind].filter(each=>each!=kinds.whitespace).pop()||kinds.other,
+                                text: prevToken.text+nextToken.text,
+                                // TODO: I'm unsure about this path and startLine/endLine
+                                path: prevToken.path,
+                                startLine: prevToken.startLine,
+                                endLine: nextToken.endLine,
+                            })
+                            // NOTE: prefixTokens and postfixTokens are NOT standard
+                            // usually I think they would cause errors, as would mixing invalid tokens (ex: string with an identifier)
+                            bodyTokens.splice(bodyIndex-1, 3, ...prefixTokens, newToken, ...postfixTokens)
+                            continue
                         } else if (eachToken.text.startsWith("#")) {
                             const argName = eachToken.text.slice(1,)
                             let text = argNameToTokens[argName].map(each=>each.text).join("")
@@ -172,7 +212,7 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
                             const replacementToken = new Token({kind: kinds.string, text: `"${escapeCString(text)}"`, path: eachToken.path, startLine: eachToken.startLine, endLine: eachToken.endLine})
                             bodyTokens.splice(bodyIndex, 1, replacementToken)
                             continue
-                        } else if (eachToken.kind == kinds.identifier) {
+                        } else if (eachToken.kind == kinds.identifier && bodyTokens[bodyIndex+1]?.text != "##") {
                             if (argNameToTokens != null) {
                                 // FIXME: I think they said args are expanded before being inserted
                                 // which could make a differnce for function macros (arg name gets inserted in front of ()'s )
