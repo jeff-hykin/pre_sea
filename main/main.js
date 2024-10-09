@@ -261,7 +261,8 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
                 // flatten conditional map (leftover from #if/#elif/#else/#ifdef/#ifndef)
                 if (token.kind == kinds.conditionalMap) {
                     for (const [condition, consequence] of Object.entries(token.map)) {
-                        if (evalCondition({text: condition, objectMacros, functionMacros})) {
+                        const conditionToken = token.map[meta][condition]
+                        if (evalCondition({text: condition, conditionToken, objectMacros, functionMacros, identifierTransformation})) {
                             tokens.splice(tokenIndex, 1, ...consequence)
                             numberToYield = 0 // needs re-evalution
                             // console.log(`breaking: 1`)
@@ -413,24 +414,36 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
 }
 
 // TODO: it should be possible to do with without copying a bunch of tokens (wasted memory)
+const meta = Symbol("meta")
 function handleConditionals(tokens, index) {
     let map = {}
+    map[meta] = {}
     let condition = tokens[index].text
     map[condition] = []
+    map[meta][condition] = tokens[index]
     var index2 = index
     // note the first token is effectively skipped
     while (++index2 < tokens.length) {
         const tokenText = tokens[index2].text.replace(/^\s*#\s*/g, '')
         // nested (handles #if #ifdef #ifndef)
-        if (token.startsWith('if')) {
+        if (tokenText.startsWith('if')) {
             var { endIndex: index2, map: map2 } = handleConditionals(tokens, index2)
             map[condition].push(map2)
         // not nested (change of condition)
-        } else if (token.startsWith('else') ||token.startsWith('elif')) {
-            condition = tokens[index2].text
+        } else if (tokenText.startsWith('else') ||tokenText.startsWith('elif')) {
+            const nextCondition = tokens[index2].text
+            const conditionAlreadyExists = map[nextCondition] != null
+            // impossible for the condition to be met, but it WOULD override the correct previous version
+            // so we banish it to a usless #elif 0 instead of rewriting the code
+            if (conditionAlreadyExists) {
+                condition = `#elif 0 && ${Math.random()}`
+            } else {
+                condition = nextCondition
+            }
             map[condition] = []
+            map[meta][condition] = tokens[index2]
         // close
-        } else if (token.startsWith('endif')) {
+        } else if (tokenText.startsWith('endif')) {
             return { endIndex: index2, map, kind: kinds.conditionalMap }
         } else {
             map[condition].push(tokens[index2])
@@ -441,7 +454,7 @@ function handleConditionals(tokens, index) {
 }
 
 // this one takes a directive
-function evalCondition({text, objectMacros, functionMacros}) {
+function evalCondition({text, conditionToken, objectMacros, functionMacros, identifierTransformation}) {
     text = text.replace(/\s*#\s*/g, '')
     if (text == 'else') {
         return true
@@ -456,18 +469,19 @@ function evalCondition({text, objectMacros, functionMacros}) {
         }
         return !!out
     } else if (match = text.match(/(?:el)?if\s*(.+)/)) {
-        return preprocessorEval(match[1])
+        return preprocessorEval(match[1], conditionToken, objectMacros, functionMacros, specialMacros, identifierTransformation)
     } else {
         throw Error(`Can't preprocessor-eval token: ${text}`)
     }
 }
 
-// this one takes a expression (not a directive)
-function preprocessorEval(string, objectMacros, functionMacros, specialMacros={}) {
+// this one takes an expression (not a directive)
+function preprocessorEval(string, conditionToken, objectMacros, functionMacros, identifierTransformation) {
+    let match
     const condition = string.trim()
     if (condition.match(/^\d+$/)) { // yes this can match octal, but for a boolean check it doesn't matter
         return !!condition.match(/[1-9]/)
-    } else if (match = condition.match(numberPatternStart) && match.length == condition.length) {
+    } else if ((match = condition.match(numberPatternStart)) && match.length == condition.length) {
         const baseNumber = match.replace(/(?:^0x|^0b|p|\.)/g,"").replace(/[eE].+/,"")
         // TODO: make sure this shortcut allways works for correctly formatted numbers
         //       (it will definitely give junk results for invalid numbers (ex: 0x1.2))
@@ -475,7 +489,6 @@ function preprocessorEval(string, objectMacros, functionMacros, specialMacros={}
     }
     
     // if just one identifier
-    let match
     if (match = string.match(regex`^\\s*(${identifierPattern})\\s*$`)) {
         if (objectMacros[match[1]]) {
             // FIXME: need to handle ## concats (could handle them in object-macro definition)
@@ -495,6 +508,7 @@ function preprocessorEval(string, objectMacros, functionMacros, specialMacros={}
         return ' 0 '
     })
     // STEP 2: then expand all macros, and convert all non-macro identifiers into 0
+    // tokenize({ string, path: "<eval>", startLine: 0 }).forEach((token)=>{
     string = string.replaceAll(regex`\\b(${identifierPattern})(\\s+|\\b)(\\()?`.g, (matchText, macroName, space, paren)=>{
         space = space || ""
         if (objectMacros[macroName]) {
@@ -512,7 +526,7 @@ function preprocessorEval(string, objectMacros, functionMacros, specialMacros={}
         return ' 0 '
     })
     // STEP 3: then convert all the chars to ints
-    string = string.replaceAll(/'(\\[^']|')*'/, (matchText)=>{
+    string = string.replaceAll(/'(\\[^']|')*'/g, (matchText)=>{
         // FIXME: this has multiple problems
         return eval(matchText).charCodeAt(0)
     })
