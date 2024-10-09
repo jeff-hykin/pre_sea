@@ -41,14 +41,14 @@ const mainFile = `#include "math.h"
 
 const fakeFileSystem = {
     "/test.cpp": mainFile,
-    "math.h": `#define PI 3.14159265358979323846`,
+    "/math.h": `#define PI 3.14159265358979323846`,
 }
 
 for (
     const each of preprocess({
         objectMacros: {},
         functionMacros: {},
-        tokens: tokenize({string: testCpp, path: `${FileSystem.pwd}/test.cpp`}),
+        tokens: tokenize({string: fakeFileSystem["/test.cpp"], path: `/test.cpp`}),
         getFile: (path)=>fakeFileSystem[FileSystem.normalize(path)]
     })
 ) {

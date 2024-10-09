@@ -13,7 +13,7 @@ int main() {
 
     #define min(a,b) ((a)<(b)?(a):(b))
     
-    #if min(-1, 1000) > 0
+    #if min(-1, 1000)> 0
         printf("I should be NOT true");
     #else
         printf("I should be true");

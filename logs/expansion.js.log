@@ -61,10 +61,10 @@
 { kind:      "number", startLine:    1, endLine:    1, path: "$PROJECT_ROOT/logs/math.h", text: "3.14159265358979323846" }
 { kind: "punctuation", startLine:    7, endLine:    7, path: "$PROJECT_ROOT/logs/test.cpp", text: ";" }
 { kind:  "whitespace", startLine:    7, endLine:    9, path: "$PROJECT_ROOT/logs/test.cpp", text: "\n    \n    " }
-{ kind:  "identifier", startLine:    9, endLine:    9, path: "$PROJECT_ROOT/logs/test.cpp", text: "\"$PROJECT_ROOT/logs/test.cpp\"" }
+{ kind:      "string", startLine:    9, endLine:    9, path: "$PROJECT_ROOT/logs/test.cpp", text: "\"$PROJECT_ROOT/logs/test.cpp\"" }
 { kind: "punctuation", startLine:    9, endLine:    9, path: "$PROJECT_ROOT/logs/test.cpp", text: ";" }
 { kind:  "whitespace", startLine:    9, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: "\n    " }
-{ kind:  "identifier", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: "9" }
+{ kind:      "number", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: "9" }
 { kind: "punctuation", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: ";" }
 { kind:  "whitespace", startLine:   10, endLine:   11, path: "$PROJECT_ROOT/logs/test.cpp", text: "\n    " }
 { kind:  "identifier", startLine:   11, endLine:   11, path: "$PROJECT_ROOT/logs/test.cpp", text: "discriminant" }

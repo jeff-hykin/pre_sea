@@ -6,7 +6,7 @@ import { tokenize, kinds, numberPatternStart, identifierPattern, Token } from ".
 import { commonMacros } from "./special_macros.js"
 import { escapeCString } from "./misc.js"
 // FIXME: path.basename changes depending on OS that this runs on. Which breaks the purity of the preprocessor
-import { Path } from "https://deno.land/std@0.117.0/path/mod.ts"
+import { dirname, } from "https://deno.land/std@0.117.0/path/mod.ts"
 
 // next Tasks:
     // DONE: get #include working for relative paths
@@ -111,7 +111,7 @@ export function* preprocess({
             // see: https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html
             if (specialMacros[token.text]) {
                 // expand special macro // <- this is here to make the codebase easier to search
-                const token = specialMacros[token.text](
+                const resultToken = specialMacros[token.text](
                     token,
                     {
                         tokens,
@@ -124,7 +124,7 @@ export function* preprocess({
                         },
                     }
                 )
-                tokens.splice(tokenIndex, 1, token)
+                tokens.splice(tokenIndex, 1, resultToken)
                 return 1
             }
             
@@ -173,8 +173,8 @@ export function* preprocess({
                     let tokensToSplice = 1
                     
                     // NOTE: this is going to be mutatking the tokens array, but only tokens that appear after futureTokenIndex
-                    for (const eachToken of preprocess({ ...childArgs, expandTextMacros: false, tokenIndex: futureTokenIndex+1, })) {
-                        console.debug(`eachToken is:`,eachToken)
+                    for (const eachToken of preprocess({ ...childArgs, tokens,  expandTextMacros: false, tokenIndex: futureTokenIndex+1, })) {
+                        console.debug(`    eachToken is:`,eachToken)
                         tokensToSplice += 1
                         // 
                         // balace parentheses and check for end of args
@@ -318,7 +318,7 @@ export function* preprocess({
                 if (token.kind == kinds.conditionalMap) {
                     for (const [condition, consequence] of Object.entries(token.map)) {
                         const conditionToken = token.map[meta][condition]
-                        if (evalCondition({text: condition, conditionToken, objectMacros, functionMacros, identifierTransformation})) {
+                        if (evalCondition({text: condition, conditionToken, objectMacros, functionMacros,  specialMacros, identifierTransformation})) {
                             tokens.splice(tokenIndex, 1, ...consequence)
                             numberToYield = 0 // needs re-evalution
                             // console.log(`breaking: 1`)
@@ -390,7 +390,7 @@ export function* preprocess({
                         let fullPath
                         if (quoteIncludeTarget) {
                             // FIXME: probably need to add like `${parentPath(token.path)}/${includeTarget}`
-                            fullPath = `${Path.dirname(token.path)}/${includeTarget}`
+                            fullPath = `${dirname(token.path)}/${includeTarget}`
                             newString = getFile(fullPath)
                         } else if (angleIncludeTarget) {
                             // FIXME: do the proper lookup 
@@ -533,7 +533,7 @@ function handleConditionals(tokens, index) {
 }
 
 // this one takes a directive
-function evalCondition({text, conditionToken, objectMacros, functionMacros, identifierTransformation}) {
+function evalCondition({text, conditionToken, objectMacros, functionMacros, specialMacros, identifierTransformation}) {
     text = text.replace(/\s*#\s*/g, '')
     if (text == 'else') {
         return true
@@ -542,20 +542,20 @@ function evalCondition({text, conditionToken, objectMacros, functionMacros, iden
     if (match = text.match(/^ifn?def/)) {
         const macroName = text.slice(match[0].length,).trim()
         // FIXME: test what this is supposed to do for built-in macros
-        const out = objectMacros[macroName] || functionMacros[macroName] || specialMacros.has(macroName)
+        const out = objectMacros[macroName] || functionMacros[macroName] || specialMacros[macroName]
         if (text.startsWith("ifn")) {
             return !out
         }
         return !!out
     } else if (match = text.match(/(?:el)?if\s*(.+)/)) {
-        return preprocessorEval({string:match[1], conditionToken, objectMacros, functionMacros, identifierTransformation})
+        return preprocessorEval({string:match[1], conditionToken, objectMacros, functionMacros, specialMacros, identifierTransformation})
     } else {
         throw Error(`Can't preprocessor-eval token: ${text}`)
     }
 }
 
 // this one takes an expression (not a directive)
-function preprocessorEval({string, conditionToken, objectMacros, functionMacros, identifierTransformation}) {
+function preprocessorEval({string, conditionToken, objectMacros, functionMacros, specialMacros, identifierTransformation}) {
     let match
     const condition = string.trim()
     if (condition.match(/^\d+$/)) { // yes this can match octal, but for a boolean check it doesn't matter
@@ -569,14 +569,15 @@ function preprocessorEval({string, conditionToken, objectMacros, functionMacros,
     
     // quick/short circuit if just one identifier
     if (match = string.match(regex`^\\s*(${identifierPattern})\\s*$`)) {
-        if (!objectMacros[match[1]] && !specialMacros.has(match[1])) {
+        if (!objectMacros[match[1]] && !specialMacros[match[1]]) {
             return false
         }
     }
 
     // STEP 1: find all the "defined" usages and replace them with 1 or 0
+    // console.debug(`STEP 1: string is:`,string)
     string = string.replaceAll(/\bdefined\s*\(\s*(\w+)\s*\)/g, (matchText, macroName)=>{
-        if (objectMacros[macroName] || functionMacros[macroName] || specialMacros.has(macroName)) {
+        if (objectMacros[macroName] || functionMacros[macroName] || specialMacros[macroName]) {
             return ' 1 '
         }
         return ' 0 '
@@ -584,6 +585,7 @@ function preprocessorEval({string, conditionToken, objectMacros, functionMacros,
     
     // TODO: special handling would be needed here for __has_attribute
     // STEP 2: then expand all macros
+    // console.debug(`STEP 2: string is:`,string)
     let tokens = tokenize({ string, path: conditionToken.path, startLine: conditionToken.startLine })
     for (const each of tokens) {
         each.endLine = conditionToken.endLine
@@ -592,14 +594,16 @@ function preprocessorEval({string, conditionToken, objectMacros, functionMacros,
     while (index < tokens.length) {
         index += identifierTransformation(tokens, index)
     }
-    console.debug(`tokens is:`,tokens)
+    // console.debug(`tokens is:`,tokens)
     // STEP 3: convert all non-macro identifiers into 0
+    // console.debug(`STEP 3: tokens is:`,tokens)
     tokens = tokens.map(
         each=>(
             (each.kind != kinds.identifier)   ?   each   :    new Token({...each,  kind: kinds.number, text: "0"})
         )
     )
     // STEP 4: then convert all the chars to ints
+    // console.debug(`STEP 4: tokens is:`,tokens)
     tokens = tokens.map(
         each=>(
                                                             // FIXME: this has many problems
@@ -614,7 +618,6 @@ function preprocessorEval({string, conditionToken, objectMacros, functionMacros,
     // STEP 5: then eval
     // FIXME: obvious multiple problems
     const stringVal = tokens.map(each=>each.text).join("")
-    console.debug(`stringVal  is:`,stringVal )
     return eval(stringVal)
 
     // operators: addition, subtraction, multiplication, division, bitwise operations, shifts, comparisons, and logical operations (&& and ||). The latter two obey the usual short-circuiting rules of standard C.

@@ -1,6 +1,7 @@
 import { escapeCString } from "./misc.js"
 // FIXME: path.basename changes depending on OS that this runs on. Which breaks the purity of the preprocessor
-import { Path } from "https://deno.land/std@0.117.0/path/mod.ts"
+import { basename, } from "https://deno.land/std@0.117.0/path/mod.ts"
+import { tokenize, kinds, numberPatternStart, identifierPattern, Token } from "./tokenize.js"
 
 export const hardcodedDefaults = Object.freeze({
     // NOTE: no particular reason for any of these at the moment
@@ -112,7 +113,7 @@ export const commonMacros = {
     },
     __FILE_NAME__(token, {tokens, tokenIndex, sharedState, preprocessor}) {
         // example: __FILE_NAME__ = "def25823.c"
-        return new Token({...token, text: `"${escapeCString(Path.basename(token.path))}"`, kind: kinds.string})
+        return new Token({...token, text: `"${escapeCString(basename(token.path))}"`, kind: kinds.string})
     },
     __INCLUDE_LEVEL__(token, {tokens, tokenIndex, sharedState, preprocessor}) {
         // example: __FILE_NAME__ = "def25823.c"

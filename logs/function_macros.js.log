@@ -66,31 +66,11 @@
 --  { kind: "punctuation", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: "=" }
 --  { kind:  "whitespace", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: " " }
 found start of function macro: min
-eachToken is: { kind:      "number", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: "10" }
-eachToken is: { kind: "punctuation", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: "," }
-eachToken is: { kind:  "whitespace", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: " " }
-eachToken is: { kind:      "number", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: "11" }
-eachToken is: { kind: "punctuation", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: ")" }
-bodyTokens is: [
-  { kind:  "whitespace", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: " " },
-  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: "(" },
-  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: "(" },
-  { kind:      "number", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: "10" },
-  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: ")" },
-  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: "<" },
-  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: "(" },
-  { kind:      "number", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: "11" },
-  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: ")" },
-  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: "?" },
-  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: "(" },
-  { kind:      "number", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: "10" },
-  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: ")" },
-  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: ":" },
-  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: "(" },
-  { kind:      "number", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: "11" },
-  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: ")" },
-  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: ")" }
-]
+    eachToken is: { kind:      "number", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: "10" }
+    eachToken is: { kind: "punctuation", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: "," }
+    eachToken is: { kind:  "whitespace", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: " " }
+    eachToken is: { kind:      "number", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: "11" }
+    eachToken is: { kind: "punctuation", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: ")" }
 --  { kind:  "whitespace", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: " " }
 --  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: "(" }
 --  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: "(" }
