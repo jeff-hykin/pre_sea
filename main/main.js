@@ -10,17 +10,17 @@ const Path = await import('https://deno.land/std@0.117.0/path/mod.ts')
     // DONE: get #define working for object macros
     // DONE: get ifndef working
     // DONE: get stringizing working
+    // DONE: get a hack for #if defined() working
     // test concat operator
     // test out nested macros and __LINE__
     // function macros
 
 // features todo:
-    // macro function expansion basic args
-    // #if with defined()
+    // #include<>
+    // test macro function expansion basic args
+    // #if with function macro expansion
     // #if with __has_attribute()
     // #if with operators
-    // #include<>
-    // the ## and # for macros
     // macro function expansion VARARGS
     // finish __FILE__, __LINE__
     // __DATE__, __TIME__,
