@@ -177,7 +177,7 @@ export const tokenize = ({string, path, startLine=1}) => {
             kind = kinds.number
         } else if (match = string.match(commentPatternStart)) {
             kind = kinds.comment
-        } else if (match = string.match(stringPatternStart)) {
+        } else if (match = string.match(stringPatternStart) || string.match(charLiteralPatternStart)) {
             kind = kinds.string
         } else if (match = string.match(identifierPatternStart)) {
             kind = kinds.identifier
