@@ -11,6 +11,7 @@ const Path = await import('https://deno.land/std@0.117.0/path/mod.ts')
     // DONE: get ifndef working
     // DONE: get stringizing working
     // DONE: get a hack for #if defined() working
+    // make special macros an argument
     // test concat operator
     // test out nested macros and __LINE__
     // function macros
@@ -33,6 +34,45 @@ const Path = await import('https://deno.land/std@0.117.0/path/mod.ts')
 
 const neutralKinds = new Set([ kinds.whitespace, kinds.number, kinds.comment, kinds.string, kinds.punctuation, kinds.other ])
 const plainTextKinds = new Set([ ...neutralKinds, kinds.identifier ])
+const standardSpecialMacros = {
+    // see: https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html
+    "__FILE__":(token, tokens, tokenIndex, identifierTransformation)=>{
+        return new Token({...token, text: `"${escapeCString(token.path)}"`, kind: kinds.string})
+    },
+    "__LINE__":(token, tokens, tokenIndex, identifierTransformation)=>{
+        // TODO: test gcc/clang to see if it should be token.startLine or token.endLine
+        //       (startLine can be different from endLine because of line continuations)
+        // 
+        // FIXME: I think this is wrong for nested macro expansions
+        //        check if the token is original or from an expansion
+        //        if from an expansion, then use the line of what the expansion replaced
+        return new Token({...token, text: String(token.startLine-1), kind: kinds.number})
+    },
+    "__DATE__":(token, tokens, tokenIndex, identifierTransformation)=>{
+
+    },
+    "__TIME__":(token, tokens, tokenIndex, identifierTransformation)=>{
+
+    },
+    "__STDC__":(token, tokens, tokenIndex, identifierTransformation)=>{
+
+    },
+    "__STDC_VERSION__":(token, tokens, tokenIndex, identifierTransformation)=>{
+
+    },
+    "__STDC_HOSTED__":(token, tokens, tokenIndex, identifierTransformation)=>{
+
+    },
+    "__cplusplus":(token, tokens, tokenIndex, identifierTransformation)=>{
+
+    },
+    "__OBJC__":(token, tokens, tokenIndex, identifierTransformation)=>{
+
+    },
+    "__ASSEMBLER__":(token, tokens, tokenIndex, identifierTransformation)=>{
+
+    },
+}
 const specialMacros = new Set([
     // see: https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html
     "__FILE__",
@@ -49,7 +89,7 @@ const specialMacros = new Set([
 
 // the recursive one
 // mutates tokens array
-export function* preprocess({ objectMacros, functionMacros, tokens, getFile, expandTextMacros = true, tokenIndex = 0 }) {
+export function* preprocess({ objectMacros, functionMacros, specialMacros=standardSpecialMacros, tokens, getFile, expandTextMacros = true, tokenIndex = 0, systemFolders=[] }) {
     const identifierTransformation = (tokens, tokenIndex)=>{
         if (expandTextMacros) {
             const token = tokens[tokenIndex]
@@ -57,19 +97,9 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
             // special macros
             // 
             // see: https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html
-            if (specialMacros.has(token.text)) {
-                if (token.text == '__FILE__') {
-                    // FIXME: make a new token object
-                    token.text = `"${escapeCString(token.path)}"`
-                } else if (token.text == '__LINE__') {
-                    // TODO: test gcc/clang to see if it should be token.startLine or token.endLine
-                    //       (startLine can be different from endLine because of line continuations)
-                    // 
-                    // FIXME: I think this is wrong for nested macro expansions
-                    //        check if the token is original or from an expansion
-                    //        if from an expansion, then use the line of what the expansion replaced
-                    token.text = String(token.startLine-1)
-                }
+            if (specialMacros[token.text]) {
+                const token = specialMacros[token.text](token, tokens, tokenIndex, identifierTransformation)
+                tokens.splice(tokenIndex, 1, token)
                 return 1
             }
             
@@ -231,7 +261,6 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
                         bodyIndex += 1
                     }
                     
-                    console.debug(`bodyTokens is:`,bodyTokens)
                     // FIXME: check for varargs
                     // then check for varargs
                     // FIXME: expand/replace normal args
@@ -342,7 +371,27 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
                             // FIXME: do the proper lookup 
                             // newString = getFile(includeTarget)
                             // fullPath = includeTarget
+                            
+                            // error if followed by non-comments
+                            // <name> note: can't escape>
+                            // check standard system folders
+                            // /usr/local/include
+                            // libdir/gcc/target/version/include
+                            // /usr/target/include
+                            // /usr/include
+                            // folders get prepended with -I 
+                            // target is the canonical name of the system GCC was configured to compile code for
+                            // For C++ programs, it will also look in /usr/include/g++-v3, first
+                            // You can prevent GCC from searching any of the default directories with the -nostdinc option
+                            // "name" also can't escape quote
+                            // check if exists as a relative to that file path (not relative to PWD)
+                            // then check if the file is used in the -iquote directories 
+                            // then check the same paths as <file>
+                            // read the file, ensure it ends with a new line, recurse with shared state, then resume
+
                             throw Error(`Unimplemented angle include: ${token.text}`)
+                        } else {
+                            throw Error(`Bad include directive: ${token.path}:${token.startLine}`)
                         }
                         if (!newString) {
                             throw Error(`Bad include directive: ${token.path}:${token.startLine}`)
@@ -350,6 +399,7 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
                         const newTokens = preprocess({
                             objectMacros,
                             functionMacros,
+                            specialMacros,
                             tokens: tokenize({ string: newString, path: fullPath }), 
                             getFile,
                             expandTextMacros: true, // TODO: check if this is correct
