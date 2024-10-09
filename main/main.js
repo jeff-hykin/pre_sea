@@ -115,10 +115,12 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
                     const args = [
                         prevArg,
                     ]
+                    let tokensToSplice = 1
                     
                     // NOTE: this is going to be mutatking the tokens array, but only tokens that appear after futureTokenIndex
                     for (const eachToken of preprocess({ objectMacros, functionMacros, tokens, getFile, expandTextMacros: false, tokenIndex: futureTokenIndex+1 })) {
                         console.debug(`eachToken is:`,eachToken)
+                        tokensToSplice += 1
                         // 
                         // balace parentheses and check for end of args
                         //
@@ -235,7 +237,7 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
                     // FIXME: expand/replace normal args
                     // * I think then run another expansion pass on the output
                     // unclear if concat can concat to a macro name that then gets expanded by the second pass
-                    tokens.splice(tokenIndex, 1, ...bodyTokens)
+                    tokens.splice(tokenIndex, tokensToSplice+1, ...bodyTokens)
                     return bodyTokens.length
                 }
             }
@@ -300,7 +302,11 @@ export function* preprocess({ objectMacros, functionMacros, tokens, getFile, exp
                         }
                         
                         if (macroArgs) {
+                            // NOTE: this tokenize destroys the additional line numbers because the escaped newlines are already removed
                             const body = tokenize({ string: macroBody, path: token.path, startLine: token.startLine })
+                            for (const each of body) {
+                                each.endLine = token.endLine
+                            }
                             if (body.length > 0) {
                                 if (body[0].text == "##" || body.slice(-1)[0].text == "##") {
                                     throw Error(`Function macro ${token.text} on ${token.path}:${token.startLine} has ## at the end or beginning (which is invalid)`)
@@ -469,14 +475,14 @@ function evalCondition({text, conditionToken, objectMacros, functionMacros, iden
         }
         return !!out
     } else if (match = text.match(/(?:el)?if\s*(.+)/)) {
-        return preprocessorEval(match[1], conditionToken, objectMacros, functionMacros, specialMacros, identifierTransformation)
+        return preprocessorEval({string:match[1], conditionToken, objectMacros, functionMacros, identifierTransformation})
     } else {
         throw Error(`Can't preprocessor-eval token: ${text}`)
     }
 }
 
 // this one takes an expression (not a directive)
-function preprocessorEval(string, conditionToken, objectMacros, functionMacros, identifierTransformation) {
+function preprocessorEval({string, conditionToken, objectMacros, functionMacros, identifierTransformation}) {
     let match
     const condition = string.trim()
     if (condition.match(/^\d+$/)) { // yes this can match octal, but for a boolean check it doesn't matter
@@ -488,51 +494,55 @@ function preprocessorEval(string, conditionToken, objectMacros, functionMacros, 
         return !!baseNumber.match(/[1-9a-fA-F]/)
     }
     
-    // if just one identifier
+    // quick/short circuit if just one identifier
     if (match = string.match(regex`^\\s*(${identifierPattern})\\s*$`)) {
-        if (objectMacros[match[1]]) {
-            // FIXME: need to handle ## concats (could handle them in object-macro definition)
-            const expandedAsString = objectMacros[match[1]].map(each=>each.text).join("")
-            // no more expansions is equivlent to {},{},{} macros
-            return preprocessorEval(expandedAsString, {}, {}, {})
-        } else {
+        if (!objectMacros[match[1]] && !specialMacros.has(match[1])) {
             return false
         }
     }
 
     // STEP 1: find all the "defined" usages and replace them with 1 or 0
     string = string.replaceAll(/\bdefined\s*\(\s*(\w+)\s*\)/g, (matchText, macroName)=>{
-        if (objectMacros[macroName] || functionMacros[macroName] || specialMacros[macroName]) {
+        if (objectMacros[macroName] || functionMacros[macroName] || specialMacros.has(macroName)) {
             return ' 1 '
         }
         return ' 0 '
     })
-    // STEP 2: then expand all macros, and convert all non-macro identifiers into 0
-    // tokenize({ string, path: "<eval>", startLine: 0 }).forEach((token)=>{
-    string = string.replaceAll(regex`\\b(${identifierPattern})(\\s+|\\b)(\\()?`.g, (matchText, macroName, space, paren)=>{
-        space = space || ""
-        if (objectMacros[macroName]) {
-            // FIXME: need to handle ## concats (could handle them in object-macro definition)
-            return objectMacros[match[1]].map(each=>each.text).join("").replace(/\s*##\s*/g, "") + space
-        }
-        if (specialMacros[macroName]) {
-            // FIXME: need a better way to apply this (ex: __LINE__ needs to know external stuff)
-            return specialMacros[macroName]() + space
-        }
-        if (functionMacros[macroName] && paren) {
-            // FIXME: need to handle ## concats (could handle them in object-macro definition)
-            throw Error(`Unimplemented: function macro expansion inside of #if`)
-        }
-        return ' 0 '
-    })
-    // STEP 3: then convert all the chars to ints
-    string = string.replaceAll(/'(\\[^']|')*'/g, (matchText)=>{
-        // FIXME: this has multiple problems
-        return eval(matchText).charCodeAt(0)
-    })
-    // STEP 4: then eval
+    
+    // TODO: special handling would be needed here for __has_attribute
+    // STEP 2: then expand all macros
+    let tokens = tokenize({ string, path: conditionToken.path, startLine: conditionToken.startLine })
+    for (const each of tokens) {
+        each.endLine = conditionToken.endLine
+    }
+    let index = 0
+    while (index < tokens.length) {
+        index += identifierTransformation(tokens, index)
+    }
+    console.debug(`tokens is:`,tokens)
+    // STEP 3: convert all non-macro identifiers into 0
+    tokens = tokens.map(
+        each=>(
+            (each.kind != kinds.identifier)   ?   each   :    new Token({...each,  kind: kinds.number, text: "0"})
+        )
+    )
+    // STEP 4: then convert all the chars to ints
+    tokens = tokens.map(
+        each=>(
+                                                            // FIXME: this has many problems
+            (each.kind != kinds.string)   ?   each   :    new Token({...each,  kind: kinds.number, text: eval(each.text).charCodeAt(0)})
+        )
+    )
+    // string = string.replaceAll(/'(\\[^']|')*'/g, (matchText)=>{
+    //     // FIXME: this has multiple problems
+    //     return eval(matchText).charCodeAt(0)
+    // })
+
+    // STEP 5: then eval
     // FIXME: obvious multiple problems
-    return eval(string)
+    const stringVal = tokens.map(each=>each.text).join("")
+    console.debug(`stringVal  is:`,stringVal )
+    return eval(stringVal)
 
     // operators: addition, subtraction, multiplication, division, bitwise operations, shifts, comparisons, and logical operations (&& and ||). The latter two obey the usual short-circuiting rules of standard C.
         // +

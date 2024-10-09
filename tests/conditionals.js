@@ -10,8 +10,12 @@ int main() {
     printf("Enter coefficients a, b and c: ");
     scanf("%lf %lf %lf", &a, &b, &c);
     PI;
+
+    #define min(a,b) ((a)<(b)?(a):(b))
     
-    #if 1 + 1 > 0
+    #if min(-1, 1000) > 0
+        printf("I should be NOT true");
+    #else
         printf("I should be true");
     #endif
 

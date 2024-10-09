@@ -72,49 +72,43 @@ eachToken is: { kind:  "whitespace", startLine:   10, endLine:   10, path: "$PRO
 eachToken is: { kind:      "number", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: "11" }
 eachToken is: { kind: "punctuation", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: ")" }
 bodyTokens is: [
-  { kind:  "whitespace", startLine:    8, endLine:    1, path: "$PROJECT_ROOT/logs/test.cpp", text: " " },
-  { kind: "punctuation", startLine:    8, endLine:    1, path: "$PROJECT_ROOT/logs/test.cpp", text: "(" },
-  { kind: "punctuation", startLine:    8, endLine:    1, path: "$PROJECT_ROOT/logs/test.cpp", text: "(" },
+  { kind:  "whitespace", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: " " },
+  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: "(" },
+  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: "(" },
   { kind:      "number", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: "10" },
-  { kind: "punctuation", startLine:    8, endLine:    1, path: "$PROJECT_ROOT/logs/test.cpp", text: ")" },
-  { kind: "punctuation", startLine:    8, endLine:    1, path: "$PROJECT_ROOT/logs/test.cpp", text: "<" },
-  { kind: "punctuation", startLine:    8, endLine:    1, path: "$PROJECT_ROOT/logs/test.cpp", text: "(" },
+  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: ")" },
+  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: "<" },
+  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: "(" },
   { kind:      "number", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: "11" },
-  { kind: "punctuation", startLine:    8, endLine:    1, path: "$PROJECT_ROOT/logs/test.cpp", text: ")" },
-  { kind: "punctuation", startLine:    8, endLine:    1, path: "$PROJECT_ROOT/logs/test.cpp", text: "?" },
-  { kind: "punctuation", startLine:    8, endLine:    1, path: "$PROJECT_ROOT/logs/test.cpp", text: "(" },
+  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: ")" },
+  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: "?" },
+  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: "(" },
   { kind:      "number", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: "10" },
-  { kind: "punctuation", startLine:    8, endLine:    1, path: "$PROJECT_ROOT/logs/test.cpp", text: ")" },
-  { kind: "punctuation", startLine:    8, endLine:    1, path: "$PROJECT_ROOT/logs/test.cpp", text: ":" },
-  { kind: "punctuation", startLine:    8, endLine:    1, path: "$PROJECT_ROOT/logs/test.cpp", text: "(" },
+  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: ")" },
+  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: ":" },
+  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: "(" },
   { kind:      "number", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: "11" },
-  { kind: "punctuation", startLine:    8, endLine:    1, path: "$PROJECT_ROOT/logs/test.cpp", text: ")" },
-  { kind: "punctuation", startLine:    8, endLine:    1, path: "$PROJECT_ROOT/logs/test.cpp", text: ")" }
+  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: ")" },
+  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: ")" }
 ]
---  { kind:  "whitespace", startLine:    8, endLine:    1, path: "$PROJECT_ROOT/logs/test.cpp", text: " " }
---  { kind: "punctuation", startLine:    8, endLine:    1, path: "$PROJECT_ROOT/logs/test.cpp", text: "(" }
---  { kind: "punctuation", startLine:    8, endLine:    1, path: "$PROJECT_ROOT/logs/test.cpp", text: "(" }
+--  { kind:  "whitespace", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: " " }
+--  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: "(" }
+--  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: "(" }
 --  { kind:      "number", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: "10" }
---  { kind: "punctuation", startLine:    8, endLine:    1, path: "$PROJECT_ROOT/logs/test.cpp", text: ")" }
---  { kind: "punctuation", startLine:    8, endLine:    1, path: "$PROJECT_ROOT/logs/test.cpp", text: "<" }
---  { kind: "punctuation", startLine:    8, endLine:    1, path: "$PROJECT_ROOT/logs/test.cpp", text: "(" }
+--  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: ")" }
+--  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: "<" }
+--  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: "(" }
 --  { kind:      "number", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: "11" }
---  { kind: "punctuation", startLine:    8, endLine:    1, path: "$PROJECT_ROOT/logs/test.cpp", text: ")" }
---  { kind: "punctuation", startLine:    8, endLine:    1, path: "$PROJECT_ROOT/logs/test.cpp", text: "?" }
---  { kind: "punctuation", startLine:    8, endLine:    1, path: "$PROJECT_ROOT/logs/test.cpp", text: "(" }
+--  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: ")" }
+--  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: "?" }
+--  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: "(" }
 --  { kind:      "number", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: "10" }
---  { kind: "punctuation", startLine:    8, endLine:    1, path: "$PROJECT_ROOT/logs/test.cpp", text: ")" }
---  { kind: "punctuation", startLine:    8, endLine:    1, path: "$PROJECT_ROOT/logs/test.cpp", text: ":" }
---  { kind: "punctuation", startLine:    8, endLine:    1, path: "$PROJECT_ROOT/logs/test.cpp", text: "(" }
+--  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: ")" }
+--  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: ":" }
+--  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: "(" }
 --  { kind:      "number", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: "11" }
---  { kind: "punctuation", startLine:    8, endLine:    1, path: "$PROJECT_ROOT/logs/test.cpp", text: ")" }
---  { kind: "punctuation", startLine:    8, endLine:    1, path: "$PROJECT_ROOT/logs/test.cpp", text: ")" }
---  { kind: "punctuation", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: "(" }
---  { kind:      "number", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: "10" }
---  { kind: "punctuation", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: "," }
---  { kind:  "whitespace", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: " " }
---  { kind:      "number", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: "11" }
---  { kind: "punctuation", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: ")" }
+--  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: ")" }
+--  { kind: "punctuation", startLine:    8, endLine:    8, path: "$PROJECT_ROOT/logs/test.cpp", text: ")" }
 --  { kind: "punctuation", startLine:   10, endLine:   10, path: "$PROJECT_ROOT/logs/test.cpp", text: ";" }
 --  { kind:  "whitespace", startLine:   10, endLine:   12, path: "$PROJECT_ROOT/logs/test.cpp", text: "\n\n    " }
 --  { kind:     "comment", startLine:   12, endLine:   12, path: "$PROJECT_ROOT/logs/test.cpp", text: "// condition for real and different roots" }
