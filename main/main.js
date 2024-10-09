@@ -420,7 +420,7 @@ function handleConditionals(tokens, index) {
     var index2 = index
     // note the first token is effectively skipped
     while (++index2 < tokens.length) {
-        const token = tokens[index2].text.replace(/\s*#\s*/g, '')
+        const tokenText = tokens[index2].text.replace(/^\s*#\s*/g, '')
         // nested (handles #if #ifdef #ifndef)
         if (token.startsWith('if')) {
             var { endIndex: index2, map: map2 } = handleConditionals(tokens, index2)
