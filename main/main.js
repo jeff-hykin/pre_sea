@@ -3,6 +3,7 @@ import { escapeRegexMatch } from "https://deno.land/x/good@1.7.1.1/flattened/esc
 import { zipLong as zip } from "https://deno.land/x/good@1.9.0.0/flattened/zip_long.js"
 import { regex } from "https://deno.land/x/good@1.9.0.0/flattened/regex.js"
 import { tokenize, kinds, numberPatternStart, identifierPattern, Token } from "./tokenize.js"
+// import { commonMacros } from "./special_macros.js"
 const Path = await import('https://deno.land/std@0.117.0/path/mod.ts')
 
 // next Tasks:
@@ -36,10 +37,10 @@ const neutralKinds = new Set([ kinds.whitespace, kinds.number, kinds.comment, ki
 const plainTextKinds = new Set([ ...neutralKinds, kinds.identifier ])
 const standardSpecialMacros = {
     // see: https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html
-    "__FILE__":(token, tokens, tokenIndex, identifierTransformation)=>{
+    "__FILE__":(sharedState, token, tokens, tokenIndex, identifierTransformation)=>{
         return new Token({...token, text: `"${escapeCString(token.path)}"`, kind: kinds.string})
     },
-    "__LINE__":(token, tokens, tokenIndex, identifierTransformation)=>{
+    "__LINE__":(sharedState, token, tokens, tokenIndex, identifierTransformation)=>{
         // TODO: test gcc/clang to see if it should be token.startLine or token.endLine
         //       (startLine can be different from endLine because of line continuations)
         // 
@@ -48,9 +49,12 @@ const standardSpecialMacros = {
         //        if from an expansion, then use the line of what the expansion replaced
         return new Token({...token, text: String(token.startLine-1), kind: kinds.number})
     },
-    "__DATE__":(token, tokens, tokenIndex, identifierTransformation)=>{
-        //__DATE__ = "Oct  9 2024"
-        const date = new Date()
+    "__DATE__":(sharedState, token, tokens, tokenIndex, identifierTransformation)=>{
+        // example: __DATE__ = "Oct  9 2024"
+        if (!sharedState.dateTime) {
+            sharedState.dateTime = new Date()
+        }
+        const date = sharedState.dateTime
         let month, day, year
         switch (date.getMonth()) {
             case 0: month = "Jan"; break
@@ -68,30 +72,46 @@ const standardSpecialMacros = {
         }
         day = `${date.getDay()}`.padStart(2, " ")
         year = date.getFullYear()
-        return new Token({...token, text: `${month} ${day} ${year}`, kind: kinds.string})
+        return new Token({...token, text: `"${month} ${day} ${year}"`, kind: kinds.string})
     },
-    "__TIME__":(token, tokens, tokenIndex, identifierTransformation)=>{
+    "__TIME__":(sharedState, token, tokens, tokenIndex, identifierTransformation)=>{
+        // example: __TIME__ = "16:17:38"
+        if (!sharedState.dateTime) {
+            sharedState.dateTime = new Date()
+        }
+        const date = sharedState.dateTime
+        const hours   = String(date.getHours()).padStart(2, "0")
+        const minutes = String(date.getMinutes()).padStart(2, "0")
+        const seconds = String(date.getSeconds()).padStart(2, "0")
+        return new Token({...token, text: `"${hours}:${minutes}:${seconds}"`, kind: kinds.string})
+    },
+    "__STDC__":(sharedState, token, tokens, tokenIndex, identifierTransformation)=>{
+        return new Token({...token, text: "1", kind: kinds.number})
+    },
+    "__STDC_VERSION__":(sharedState, token, tokens, tokenIndex, identifierTransformation)=>{
 
     },
-    "__STDC__":(token, tokens, tokenIndex, identifierTransformation)=>{
+    "__STDC_HOSTED__":(sharedState, token, tokens, tokenIndex, identifierTransformation)=>{
 
     },
-    "__STDC_VERSION__":(token, tokens, tokenIndex, identifierTransformation)=>{
+    "__cplusplus":(sharedState, token, tokens, tokenIndex, identifierTransformation)=>{
 
     },
-    "__STDC_HOSTED__":(token, tokens, tokenIndex, identifierTransformation)=>{
+    "__OBJC__":(sharedState, token, tokens, tokenIndex, identifierTransformation)=>{
 
     },
-    "__cplusplus":(token, tokens, tokenIndex, identifierTransformation)=>{
-
-    },
-    "__OBJC__":(token, tokens, tokenIndex, identifierTransformation)=>{
-
-    },
-    "__ASSEMBLER__":(token, tokens, tokenIndex, identifierTransformation)=>{
+    "__ASSEMBLER__":(sharedState, token, tokens, tokenIndex, identifierTransformation)=>{
 
     },
 }
+const commonMacros = {
+    "__TIMESTAMP__":(sharedState, token, tokens, tokenIndex, identifierTransformation)=>{
+        // example: __TIMESTAMP__ = "Wed Oct  9 16:17:38 2024"
+        return new Token({...token, text: `"${escapeCString(token.path)}"`, kind: kinds.string})
+    },
+    ...standardSpecialMacros,
+}
+// TODO: remove this
 const specialMacros = new Set([
     // see: https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html
     "__FILE__",
@@ -108,7 +128,7 @@ const specialMacros = new Set([
 
 // the recursive one
 // mutates tokens array
-export function* preprocess({ objectMacros, functionMacros, specialMacros=standardSpecialMacros, tokens, getFile, expandTextMacros = true, tokenIndex = 0, systemFolders=[] }) {
+export function* preprocess({ objectMacros, functionMacros, specialMacros=standardSpecialMacros, tokens, getFile, expandTextMacros = true, tokenIndex = 0, systemFolders=[], sharedState={} }) {
     const identifierTransformation = (tokens, tokenIndex)=>{
         if (expandTextMacros) {
             const token = tokens[tokenIndex]
@@ -117,7 +137,7 @@ export function* preprocess({ objectMacros, functionMacros, specialMacros=standa
             // 
             // see: https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html
             if (specialMacros[token.text]) {
-                const token = specialMacros[token.text](token, tokens, tokenIndex, identifierTransformation)
+                const token = specialMacros[token.text](sharedState, token, tokens, tokenIndex, identifierTransformation)
                 tokens.splice(tokenIndex, 1, token)
                 return 1
             }
@@ -167,7 +187,7 @@ export function* preprocess({ objectMacros, functionMacros, specialMacros=standa
                     let tokensToSplice = 1
                     
                     // NOTE: this is going to be mutatking the tokens array, but only tokens that appear after futureTokenIndex
-                    for (const eachToken of preprocess({ objectMacros, functionMacros, tokens, getFile, expandTextMacros: false, tokenIndex: futureTokenIndex+1 })) {
+                    for (const eachToken of preprocess({ objectMacros, functionMacros, tokens, getFile, expandTextMacros: false, tokenIndex: futureTokenIndex+1, sharedState })) {
                         console.debug(`eachToken is:`,eachToken)
                         tokensToSplice += 1
                         // 
