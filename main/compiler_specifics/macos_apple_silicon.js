@@ -55,7 +55,7 @@ const clang = {
     "v14.0.0": new CompilerSpecifics({
         defaultIncludePaths: [
             "/usr/local/include",
-            "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/local/include",
+            "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/local/include", // didnt exist
             "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/14.0.0/include",
             "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include",
             "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include",
@@ -193,7 +193,8 @@ const clang = {
 const gcc = {
     "v13.3.0": new CompilerSpecifics({
         defaultIncludePaths: [
-            "/nix/store/zv1wwz8v7bh8vqyi2x485dlsnxzkddr7-gcc-13.3.0/lib/gcc/aarch64-apple-darwin/13.3.0/../../../../aarch64-apple-darwin/include",
+            // "/nix/store/zv1wwz8v7bh8vqyi2x485dlsnxzkddr7-gcc-13.3.0/lib/gcc/aarch64-apple-darwin/13.3.0/../../../../aarch64-apple-darwin/include",
+            "/nix/store/zv1wwz8v7bh8vqyi2x485dlsnxzkddr7-gcc-13.3.0/aarch64-apple-darwin/include",
             "/nix/store/na9g3654cpwgsbivqcssqy225x3kafsn-libSystem-11.0.0/include",
             "/nix/store/zv1wwz8v7bh8vqyi2x485dlsnxzkddr7-gcc-13.3.0/lib/gcc/aarch64-apple-darwin/13.3.0/include",
             "/nix/store/zv1wwz8v7bh8vqyi2x485dlsnxzkddr7-gcc-13.3.0/include",
