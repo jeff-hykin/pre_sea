@@ -4,6 +4,7 @@ import { zipLong as zip } from "https://deno.land/x/good@1.9.0.0/flattened/zip_l
 import { regex } from "https://deno.land/x/good@1.9.0.0/flattened/regex.js"
 import { tokenize, kinds, numberPatternStart, identifierPattern, Token } from "./tokenize.js"
 import { commonMacros } from "./special_macros.js"
+import { escapeCString } from "./misc.js"
 const Path = await import('https://deno.land/std@0.117.0/path/mod.ts')
 
 // next Tasks:
@@ -38,7 +39,8 @@ const plainTextKinds = new Set([ ...neutralKinds, kinds.identifier ])
 
 // the recursive one
 // mutates tokens array
-export function* preprocess({ objectMacros, functionMacros, specialMacros=commonMacros, tokens, getFile, expandTextMacros = true, tokenIndex = 0, systemFolders=[], sharedState={} }) {
+export function* preprocess({ objectMacros, functionMacros, specialMacros=commonMacros, tokens, getFile, expandTextMacros = true, tokenIndex = 0, systemFolders=[], sharedState={}, originalArgs=null }) {
+    const preprocessorOriginalArgs = originalArgs || { objectMacros, functionMacros, specialMacros=commonMacros, tokens, getFile, expandTextMacros = true, tokenIndex = 0, systemFolders=[], sharedState={}, originFilePath: tokens[0]?.path }
     const identifierTransformation = (tokens, tokenIndex)=>{
         if (expandTextMacros) {
             const token = tokens[tokenIndex]
@@ -47,7 +49,8 @@ export function* preprocess({ objectMacros, functionMacros, specialMacros=common
             // 
             // see: https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html
             if (specialMacros[token.text]) {
-                const token = specialMacros[token.text](sharedState, token, tokens, tokenIndex, identifierTransformation)
+                // expand special macro // <- this is here to make the codebase easier to search
+                const token = specialMacros[token.text](token, {sharedState, preprocessorOriginalArgs, tokens, tokenIndex, identifierTransformation})
                 tokens.splice(tokenIndex, 1, token)
                 return 1
             }
@@ -97,7 +100,7 @@ export function* preprocess({ objectMacros, functionMacros, specialMacros=common
                     let tokensToSplice = 1
                     
                     // NOTE: this is going to be mutatking the tokens array, but only tokens that appear after futureTokenIndex
-                    for (const eachToken of preprocess({ objectMacros, functionMacros, tokens, getFile, expandTextMacros: false, tokenIndex: futureTokenIndex+1, sharedState })) {
+                    for (const eachToken of preprocess({ objectMacros, functionMacros, tokens, getFile, expandTextMacros: false, tokenIndex: futureTokenIndex+1, sharedState, originalArgs })) {
                         console.debug(`eachToken is:`,eachToken)
                         tokensToSplice += 1
                         // 
@@ -576,23 +579,4 @@ function preprocessorEval({string, conditionToken, objectMacros, functionMacros,
     throw Error(`Unimplemented #if/#elif`)
     // TODO full on eval machine with macro expansion
     // https://gcc.gnu.org/onlinedocs/cpp/If.html
-}
-
-// TODO: validate this more thoroughly, especially for unicode
-function escapeCString(string) {
-    // (\n|\r|\t|v|\\|'|"|\?)
-    return string.replace(/(\\|\n|\r|\t|\v|'|"|\?|\0)/g, (matchText)=>{
-        switch (matchText) {
-            case "\\": return "\\\\"
-            case "\n": return "\\n"
-            case "\r": return "\\r"
-            case "\t": return "\\t"
-            case "\v": return "\\v"
-            case "'": return "\\'"
-            case '"': return '\\"'
-            case "?": return "\\?"
-            case "\0": return "\\0"
-            default: return matchText
-        }
-    })
 }

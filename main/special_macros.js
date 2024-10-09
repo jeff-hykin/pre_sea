@@ -1,9 +1,14 @@
+import { escapeCString } from "./misc.js"
+
+export const hardcodedDefaults = {
+    __STDC_VERSION__: "201710L",
+}
 export const standardSpecialMacros = {
     // see: https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html
-    __FILE__(sharedState, token, tokens, tokenIndex, identifierTransformation) {
+    __FILE__(token, {sharedState, preprocessorOriginalArgs, tokens, tokenIndex, identifierTransformation}) {
         return new Token({...token, text: `"${escapeCString(token.path)}"`, kind: kinds.string})
     },
-    __LINE__(sharedState, token, tokens, tokenIndex, identifierTransformation) {
+    __LINE__(token, {sharedState, preprocessorOriginalArgs, tokens, tokenIndex, identifierTransformation}) {
         // TODO: test gcc/clang to see if it should be token.startLine or token.endLine
         //       (startLine can be different from endLine because of line continuations)
         // 
@@ -12,7 +17,7 @@ export const standardSpecialMacros = {
         //        if from an expansion, then use the line of what the expansion replaced
         return new Token({...token, text: String(token.startLine-1), kind: kinds.number})
     },
-    __DATE__(sharedState, token, tokens, tokenIndex, identifierTransformation) {
+    __DATE__(token, {sharedState, preprocessorOriginalArgs, tokens, tokenIndex, identifierTransformation}) {
         // example: __DATE__ = "Oct  9 2024"
         if (!sharedState.dateTime) {
             sharedState.dateTime = new Date()
@@ -37,7 +42,7 @@ export const standardSpecialMacros = {
         year = date.getFullYear()
         return new Token({...token, text: `"${month} ${day} ${year}"`, kind: kinds.string})
     },
-    __TIME__(sharedState, token, tokens, tokenIndex, identifierTransformation) {
+    __TIME__(token, {sharedState, preprocessorOriginalArgs, tokens, tokenIndex, identifierTransformation}) {
         // example: __TIME__ = "16:17:38"
         if (!sharedState.dateTime) {
             sharedState.dateTime = new Date()
@@ -48,34 +53,54 @@ export const standardSpecialMacros = {
         const seconds = String(date.getSeconds()).padStart(2, "0")
         return new Token({...token, text: `"${hours}:${minutes}:${seconds}"`, kind: kinds.string})
     },
-    __STDC__(sharedState, token, tokens, tokenIndex, identifierTransformation) {
+    __STDC__(token, {sharedState, preprocessorOriginalArgs, tokens, tokenIndex, identifierTransformation}) {
         return new Token({...token, text: "1", kind: kinds.number})
     },
-    __STDC_VERSION__(sharedState, token, tokens, tokenIndex, identifierTransformation) {
-
+    __STDC_VERSION__(token, {sharedState, preprocessorOriginalArgs, tokens, tokenIndex, identifierTransformation}) {
+        return new Token({...token, text: hardcodedDefaults.__STDC_VERSION__, kind: kinds.number})
     },
-    __STDC_HOSTED__(sharedState, token, tokens, tokenIndex, identifierTransformation) {
-
+    __STDC_HOSTED__(token, {sharedState, preprocessorOriginalArgs, tokens, tokenIndex, identifierTransformation}) {
+        return new Token({...token, text: "1", kind: kinds.number})
     },
-    __cplusplus(sharedState, token, tokens, tokenIndex, identifierTransformation) {
-
-    },
-    __OBJC__(sharedState, token, tokens, tokenIndex, identifierTransformation) {
-
-    },
-    __ASSEMBLER__(sharedState, token, tokens, tokenIndex, identifierTransformation) {
-
-    },
+    // part of the preprocessor standard, but not defined for C
+    // __cplusplus(token, {sharedState, preprocessorOriginalArgs, tokens, tokenIndex, identifierTransformation}) {
+    //     // NOTE: is supposed to expand to a version number
+    // },
+    // part of the preprocessor standard, but not defined for C
+    // __OBJC__(token, {sharedState, preprocessorOriginalArgs, tokens, tokenIndex, identifierTransformation}) {
+    // 
+    // },
+    // part of the preprocessor standard, but not defined for C
+    // __ASSEMBLER__(token, {sharedState, preprocessorOriginalArgs, tokens, tokenIndex, identifierTransformation}) {
+    // 
+    // },
 }
 export const commonMacros = {
-    __TIMESTAMP__(sharedState, token, tokens, tokenIndex, identifierTransformation) {
+    __TIMESTAMP__(token, {sharedState, preprocessorOriginalArgs, tokens, tokenIndex, identifierTransformation}) {
         // example: __TIMESTAMP__ = "Wed Oct  9 16:17:38 2024"
-        const dateToken = this.__DATE__(sharedState, token, tokens, tokenIndex, identifierTransformation)
-        const timeToken = this.__TIME__(sharedState, token, tokens, tokenIndex, identifierTransformation)
+        const dateToken = this.__DATE__(token, {sharedState, preprocessorOriginalArgs, tokens, tokenIndex, identifierTransformation})
+        const timeToken = this.__TIME__(token, {sharedState, preprocessorOriginalArgs, tokens, tokenIndex, identifierTransformation})
         return new Token({
             ...token,
             text: dateToken.text.slice(0,-1) + " " + timeToken.text.slice(1),
             kind: kinds.string,
+        })
+    },
+    __BASE_FILE__(token, {sharedState, preprocessorOriginalArgs, tokens, tokenIndex, identifierTransformation}) {
+        // example: __BASE_FILE__ = "/tmp/def25823.c"
+        return new Token({
+            ...token,
+            text: `"${escapeCString(preprocessorOriginalArgs.originFilePath)}"`,
+            kind: kinds.string,
+        })
+    },
+    __COUNTER__(token, {sharedState, preprocessorOriginalArgs, tokens, tokenIndex, identifierTransformation}) {
+        // example: __BASE_FILE__ = "/tmp/def25823.c"
+        sharedState.counter = sharedState.counter || 0
+        return new Token({
+            ...token,
+            text: String(sharedState.counter++),
+            kind: kinds.number,
         })
     },
     ...standardSpecialMacros,
