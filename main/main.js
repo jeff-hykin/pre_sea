@@ -49,7 +49,26 @@ const standardSpecialMacros = {
         return new Token({...token, text: String(token.startLine-1), kind: kinds.number})
     },
     "__DATE__":(token, tokens, tokenIndex, identifierTransformation)=>{
-
+        //__DATE__ = "Oct  9 2024"
+        const date = new Date()
+        let month, day, year
+        switch (date.getMonth()) {
+            case 0: month = "Jan"; break
+            case 1: month = "Feb"; break
+            case 2: month = "Mar"; break
+            case 3: month = "Apr"; break
+            case 4: month = "May"; break
+            case 5: month = "Jun"; break
+            case 6: month = "Jul"; break
+            case 7: month = "Aug"; break
+            case 8: month = "Sep"; break
+            case 9: month = "Oct"; break
+            case 10: month = "Nov"; break
+            case 11: month = "Dec"; break
+        }
+        day = `${date.getDay()}`.padStart(2, " ")
+        year = date.getFullYear()
+        return new Token({...token, text: `${month} ${day} ${year}`, kind: kinds.string})
     },
     "__TIME__":(token, tokens, tokenIndex, identifierTransformation)=>{
 
