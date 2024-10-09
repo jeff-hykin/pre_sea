@@ -1,8 +1,8 @@
 # 
 # Custom
 # 
-
-
+main/compiler_specifics/*/headers/*
+!main/compiler_specifics/*/headers/.keep
 
 # 
 # standard
