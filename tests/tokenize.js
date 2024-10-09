@@ -1,7 +1,8 @@
 import { tokenize } from '../main/tokenize.js'
 
 const code = `
-#include <math.h>
+#include <mat\\
+h.h>
 #include <stdio.h>
 int main() {
     double a, b, c, discriminant, root1, root2, realPart, imagPart;

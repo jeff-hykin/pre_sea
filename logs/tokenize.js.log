@@ -1,131 +1,104 @@
 { kind:  "whitespace", startLine:    1, endLine:    2, path: "test.cpp", text: "\n" }
-{ kind:   "directive", startLine:    2, endLine:    2, path: "test.cpp", text: "#include <math.h>" }
-{ kind:  "whitespace", startLine:    2, endLine:    3, path: "test.cpp", text: "\n" }
-{ kind:   "directive", startLine:    3, endLine:    3, path: "test.cpp", text: "#include <stdio.h>" }
+{ kind:   "directive", startLine:    2, endLine:    3, path: "test.cpp", text: "#include <math.h>" }
 { kind:  "whitespace", startLine:    3, endLine:    4, path: "test.cpp", text: "\n" }
-{ kind:  "identifier", startLine:    4, endLine:    4, path: "test.cpp", text: "int" }
-{ kind:  "whitespace", startLine:    4, endLine:    4, path: "test.cpp", text: " " }
-{ kind:  "identifier", startLine:    4, endLine:    4, path: "test.cpp", text: "main" }
-{ kind: "punctuation", startLine:    4, endLine:    4, path: "test.cpp", text: "(" }
-{ kind: "punctuation", startLine:    4, endLine:    4, path: "test.cpp", text: ")" }
-{ kind:  "whitespace", startLine:    4, endLine:    4, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:    4, endLine:    4, path: "test.cpp", text: "{" }
-{ kind:  "whitespace", startLine:    4, endLine:    5, path: "test.cpp", text: "\n    " }
-{ kind:  "identifier", startLine:    5, endLine:    5, path: "test.cpp", text: "double" }
+{ kind:   "directive", startLine:    4, endLine:    4, path: "test.cpp", text: "#include <stdio.h>" }
+{ kind:  "whitespace", startLine:    4, endLine:    5, path: "test.cpp", text: "\n" }
+{ kind:  "identifier", startLine:    5, endLine:    5, path: "test.cpp", text: "int" }
 { kind:  "whitespace", startLine:    5, endLine:    5, path: "test.cpp", text: " " }
-{ kind:  "identifier", startLine:    5, endLine:    5, path: "test.cpp", text: "a" }
-{ kind: "punctuation", startLine:    5, endLine:    5, path: "test.cpp", text: "," }
+{ kind:  "identifier", startLine:    5, endLine:    5, path: "test.cpp", text: "main" }
+{ kind: "punctuation", startLine:    5, endLine:    5, path: "test.cpp", text: "(" }
+{ kind: "punctuation", startLine:    5, endLine:    5, path: "test.cpp", text: ")" }
 { kind:  "whitespace", startLine:    5, endLine:    5, path: "test.cpp", text: " " }
-{ kind:  "identifier", startLine:    5, endLine:    5, path: "test.cpp", text: "b" }
-{ kind: "punctuation", startLine:    5, endLine:    5, path: "test.cpp", text: "," }
-{ kind:  "whitespace", startLine:    5, endLine:    5, path: "test.cpp", text: " " }
-{ kind:  "identifier", startLine:    5, endLine:    5, path: "test.cpp", text: "c" }
-{ kind: "punctuation", startLine:    5, endLine:    5, path: "test.cpp", text: "," }
-{ kind:  "whitespace", startLine:    5, endLine:    5, path: "test.cpp", text: " " }
-{ kind:  "identifier", startLine:    5, endLine:    5, path: "test.cpp", text: "discriminant" }
-{ kind: "punctuation", startLine:    5, endLine:    5, path: "test.cpp", text: "," }
-{ kind:  "whitespace", startLine:    5, endLine:    5, path: "test.cpp", text: " " }
-{ kind:  "identifier", startLine:    5, endLine:    5, path: "test.cpp", text: "root1" }
-{ kind: "punctuation", startLine:    5, endLine:    5, path: "test.cpp", text: "," }
-{ kind:  "whitespace", startLine:    5, endLine:    5, path: "test.cpp", text: " " }
-{ kind:  "identifier", startLine:    5, endLine:    5, path: "test.cpp", text: "root2" }
-{ kind: "punctuation", startLine:    5, endLine:    5, path: "test.cpp", text: "," }
-{ kind:  "whitespace", startLine:    5, endLine:    5, path: "test.cpp", text: " " }
-{ kind:  "identifier", startLine:    5, endLine:    5, path: "test.cpp", text: "realPart" }
-{ kind: "punctuation", startLine:    5, endLine:    5, path: "test.cpp", text: "," }
-{ kind:  "whitespace", startLine:    5, endLine:    5, path: "test.cpp", text: " " }
-{ kind:  "identifier", startLine:    5, endLine:    5, path: "test.cpp", text: "imagPart" }
-{ kind: "punctuation", startLine:    5, endLine:    5, path: "test.cpp", text: ";" }
+{ kind: "punctuation", startLine:    5, endLine:    5, path: "test.cpp", text: "{" }
 { kind:  "whitespace", startLine:    5, endLine:    6, path: "test.cpp", text: "\n    " }
-{ kind:  "identifier", startLine:    6, endLine:    6, path: "test.cpp", text: "printf" }
-{ kind: "punctuation", startLine:    6, endLine:    6, path: "test.cpp", text: "(" }
-{ kind:      "string", startLine:    6, endLine:    6, path: "test.cpp", text: "\"Enter coefficients a, b and c: \"" }
-{ kind: "punctuation", startLine:    6, endLine:    6, path: "test.cpp", text: ")" }
+{ kind:  "identifier", startLine:    6, endLine:    6, path: "test.cpp", text: "double" }
+{ kind:  "whitespace", startLine:    6, endLine:    6, path: "test.cpp", text: " " }
+{ kind:  "identifier", startLine:    6, endLine:    6, path: "test.cpp", text: "a" }
+{ kind: "punctuation", startLine:    6, endLine:    6, path: "test.cpp", text: "," }
+{ kind:  "whitespace", startLine:    6, endLine:    6, path: "test.cpp", text: " " }
+{ kind:  "identifier", startLine:    6, endLine:    6, path: "test.cpp", text: "b" }
+{ kind: "punctuation", startLine:    6, endLine:    6, path: "test.cpp", text: "," }
+{ kind:  "whitespace", startLine:    6, endLine:    6, path: "test.cpp", text: " " }
+{ kind:  "identifier", startLine:    6, endLine:    6, path: "test.cpp", text: "c" }
+{ kind: "punctuation", startLine:    6, endLine:    6, path: "test.cpp", text: "," }
+{ kind:  "whitespace", startLine:    6, endLine:    6, path: "test.cpp", text: " " }
+{ kind:  "identifier", startLine:    6, endLine:    6, path: "test.cpp", text: "discriminant" }
+{ kind: "punctuation", startLine:    6, endLine:    6, path: "test.cpp", text: "," }
+{ kind:  "whitespace", startLine:    6, endLine:    6, path: "test.cpp", text: " " }
+{ kind:  "identifier", startLine:    6, endLine:    6, path: "test.cpp", text: "root1" }
+{ kind: "punctuation", startLine:    6, endLine:    6, path: "test.cpp", text: "," }
+{ kind:  "whitespace", startLine:    6, endLine:    6, path: "test.cpp", text: " " }
+{ kind:  "identifier", startLine:    6, endLine:    6, path: "test.cpp", text: "root2" }
+{ kind: "punctuation", startLine:    6, endLine:    6, path: "test.cpp", text: "," }
+{ kind:  "whitespace", startLine:    6, endLine:    6, path: "test.cpp", text: " " }
+{ kind:  "identifier", startLine:    6, endLine:    6, path: "test.cpp", text: "realPart" }
+{ kind: "punctuation", startLine:    6, endLine:    6, path: "test.cpp", text: "," }
+{ kind:  "whitespace", startLine:    6, endLine:    6, path: "test.cpp", text: " " }
+{ kind:  "identifier", startLine:    6, endLine:    6, path: "test.cpp", text: "imagPart" }
 { kind: "punctuation", startLine:    6, endLine:    6, path: "test.cpp", text: ";" }
 { kind:  "whitespace", startLine:    6, endLine:    7, path: "test.cpp", text: "\n    " }
-{ kind:  "identifier", startLine:    7, endLine:    7, path: "test.cpp", text: "scanf" }
+{ kind:  "identifier", startLine:    7, endLine:    7, path: "test.cpp", text: "printf" }
 { kind: "punctuation", startLine:    7, endLine:    7, path: "test.cpp", text: "(" }
-{ kind:      "string", startLine:    7, endLine:    7, path: "test.cpp", text: "\"%lf %lf %lf\"" }
-{ kind: "punctuation", startLine:    7, endLine:    7, path: "test.cpp", text: "," }
-{ kind:  "whitespace", startLine:    7, endLine:    7, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:    7, endLine:    7, path: "test.cpp", text: "&" }
-{ kind:  "identifier", startLine:    7, endLine:    7, path: "test.cpp", text: "a" }
-{ kind: "punctuation", startLine:    7, endLine:    7, path: "test.cpp", text: "," }
-{ kind:  "whitespace", startLine:    7, endLine:    7, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:    7, endLine:    7, path: "test.cpp", text: "&" }
-{ kind:  "identifier", startLine:    7, endLine:    7, path: "test.cpp", text: "b" }
-{ kind: "punctuation", startLine:    7, endLine:    7, path: "test.cpp", text: "," }
-{ kind:  "whitespace", startLine:    7, endLine:    7, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:    7, endLine:    7, path: "test.cpp", text: "&" }
-{ kind:  "identifier", startLine:    7, endLine:    7, path: "test.cpp", text: "c" }
+{ kind:      "string", startLine:    7, endLine:    7, path: "test.cpp", text: "\"Enter coefficients a, b and c: \"" }
 { kind: "punctuation", startLine:    7, endLine:    7, path: "test.cpp", text: ")" }
 { kind: "punctuation", startLine:    7, endLine:    7, path: "test.cpp", text: ";" }
-{ kind:  "whitespace", startLine:    7, endLine:    9, path: "test.cpp", text: "\n\n    " }
-{ kind:  "identifier", startLine:    9, endLine:    9, path: "test.cpp", text: "discriminant" }
-{ kind:  "whitespace", startLine:    9, endLine:    9, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:    9, endLine:    9, path: "test.cpp", text: "=" }
-{ kind:  "whitespace", startLine:    9, endLine:    9, path: "test.cpp", text: " " }
-{ kind:  "identifier", startLine:    9, endLine:    9, path: "test.cpp", text: "b" }
-{ kind:  "whitespace", startLine:    9, endLine:    9, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:    9, endLine:    9, path: "test.cpp", text: "*" }
-{ kind:  "whitespace", startLine:    9, endLine:    9, path: "test.cpp", text: " " }
-{ kind:  "identifier", startLine:    9, endLine:    9, path: "test.cpp", text: "b" }
-{ kind:  "whitespace", startLine:    9, endLine:    9, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:    9, endLine:    9, path: "test.cpp", text: "-" }
-{ kind:  "whitespace", startLine:    9, endLine:    9, path: "test.cpp", text: " " }
-{ kind:      "number", startLine:    9, endLine:    9, path: "test.cpp", text: "4" }
-{ kind:  "whitespace", startLine:    9, endLine:    9, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:    9, endLine:    9, path: "test.cpp", text: "*" }
-{ kind:  "whitespace", startLine:    9, endLine:    9, path: "test.cpp", text: " " }
-{ kind:  "identifier", startLine:    9, endLine:    9, path: "test.cpp", text: "a" }
-{ kind:  "whitespace", startLine:    9, endLine:    9, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:    9, endLine:    9, path: "test.cpp", text: "*" }
-{ kind:  "whitespace", startLine:    9, endLine:    9, path: "test.cpp", text: " " }
-{ kind:  "identifier", startLine:    9, endLine:    9, path: "test.cpp", text: "c" }
-{ kind: "punctuation", startLine:    9, endLine:    9, path: "test.cpp", text: ";" }
-{ kind:  "whitespace", startLine:    9, endLine:   11, path: "test.cpp", text: "\n\n    " }
-{ kind:     "comment", startLine:   11, endLine:   11, path: "test.cpp", text: "// condition for real and different roots" }
-{ kind:  "whitespace", startLine:   11, endLine:   12, path: "test.cpp", text: "\n    " }
-{ kind:  "identifier", startLine:   12, endLine:   12, path: "test.cpp", text: "if" }
-{ kind:  "whitespace", startLine:   12, endLine:   12, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:   12, endLine:   12, path: "test.cpp", text: "(" }
-{ kind:  "identifier", startLine:   12, endLine:   12, path: "test.cpp", text: "discriminant" }
-{ kind:  "whitespace", startLine:   12, endLine:   12, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:   12, endLine:   12, path: "test.cpp", text: ">" }
-{ kind:  "whitespace", startLine:   12, endLine:   12, path: "test.cpp", text: " " }
-{ kind:      "number", startLine:   12, endLine:   12, path: "test.cpp", text: "0" }
-{ kind: "punctuation", startLine:   12, endLine:   12, path: "test.cpp", text: ")" }
-{ kind:  "whitespace", startLine:   12, endLine:   12, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:   12, endLine:   12, path: "test.cpp", text: "{" }
-{ kind:  "whitespace", startLine:   12, endLine:   13, path: "test.cpp", text: "\n        " }
-{ kind:  "identifier", startLine:   13, endLine:   13, path: "test.cpp", text: "root1" }
+{ kind:  "whitespace", startLine:    7, endLine:    8, path: "test.cpp", text: "\n    " }
+{ kind:  "identifier", startLine:    8, endLine:    8, path: "test.cpp", text: "scanf" }
+{ kind: "punctuation", startLine:    8, endLine:    8, path: "test.cpp", text: "(" }
+{ kind:      "string", startLine:    8, endLine:    8, path: "test.cpp", text: "\"%lf %lf %lf\"" }
+{ kind: "punctuation", startLine:    8, endLine:    8, path: "test.cpp", text: "," }
+{ kind:  "whitespace", startLine:    8, endLine:    8, path: "test.cpp", text: " " }
+{ kind: "punctuation", startLine:    8, endLine:    8, path: "test.cpp", text: "&" }
+{ kind:  "identifier", startLine:    8, endLine:    8, path: "test.cpp", text: "a" }
+{ kind: "punctuation", startLine:    8, endLine:    8, path: "test.cpp", text: "," }
+{ kind:  "whitespace", startLine:    8, endLine:    8, path: "test.cpp", text: " " }
+{ kind: "punctuation", startLine:    8, endLine:    8, path: "test.cpp", text: "&" }
+{ kind:  "identifier", startLine:    8, endLine:    8, path: "test.cpp", text: "b" }
+{ kind: "punctuation", startLine:    8, endLine:    8, path: "test.cpp", text: "," }
+{ kind:  "whitespace", startLine:    8, endLine:    8, path: "test.cpp", text: " " }
+{ kind: "punctuation", startLine:    8, endLine:    8, path: "test.cpp", text: "&" }
+{ kind:  "identifier", startLine:    8, endLine:    8, path: "test.cpp", text: "c" }
+{ kind: "punctuation", startLine:    8, endLine:    8, path: "test.cpp", text: ")" }
+{ kind: "punctuation", startLine:    8, endLine:    8, path: "test.cpp", text: ";" }
+{ kind:  "whitespace", startLine:    8, endLine:   10, path: "test.cpp", text: "\n\n    " }
+{ kind:  "identifier", startLine:   10, endLine:   10, path: "test.cpp", text: "discriminant" }
+{ kind:  "whitespace", startLine:   10, endLine:   10, path: "test.cpp", text: " " }
+{ kind: "punctuation", startLine:   10, endLine:   10, path: "test.cpp", text: "=" }
+{ kind:  "whitespace", startLine:   10, endLine:   10, path: "test.cpp", text: " " }
+{ kind:  "identifier", startLine:   10, endLine:   10, path: "test.cpp", text: "b" }
+{ kind:  "whitespace", startLine:   10, endLine:   10, path: "test.cpp", text: " " }
+{ kind: "punctuation", startLine:   10, endLine:   10, path: "test.cpp", text: "*" }
+{ kind:  "whitespace", startLine:   10, endLine:   10, path: "test.cpp", text: " " }
+{ kind:  "identifier", startLine:   10, endLine:   10, path: "test.cpp", text: "b" }
+{ kind:  "whitespace", startLine:   10, endLine:   10, path: "test.cpp", text: " " }
+{ kind: "punctuation", startLine:   10, endLine:   10, path: "test.cpp", text: "-" }
+{ kind:  "whitespace", startLine:   10, endLine:   10, path: "test.cpp", text: " " }
+{ kind:      "number", startLine:   10, endLine:   10, path: "test.cpp", text: "4" }
+{ kind:  "whitespace", startLine:   10, endLine:   10, path: "test.cpp", text: " " }
+{ kind: "punctuation", startLine:   10, endLine:   10, path: "test.cpp", text: "*" }
+{ kind:  "whitespace", startLine:   10, endLine:   10, path: "test.cpp", text: " " }
+{ kind:  "identifier", startLine:   10, endLine:   10, path: "test.cpp", text: "a" }
+{ kind:  "whitespace", startLine:   10, endLine:   10, path: "test.cpp", text: " " }
+{ kind: "punctuation", startLine:   10, endLine:   10, path: "test.cpp", text: "*" }
+{ kind:  "whitespace", startLine:   10, endLine:   10, path: "test.cpp", text: " " }
+{ kind:  "identifier", startLine:   10, endLine:   10, path: "test.cpp", text: "c" }
+{ kind: "punctuation", startLine:   10, endLine:   10, path: "test.cpp", text: ";" }
+{ kind:  "whitespace", startLine:   10, endLine:   12, path: "test.cpp", text: "\n\n    " }
+{ kind:     "comment", startLine:   12, endLine:   12, path: "test.cpp", text: "// condition for real and different roots" }
+{ kind:  "whitespace", startLine:   12, endLine:   13, path: "test.cpp", text: "\n    " }
+{ kind:  "identifier", startLine:   13, endLine:   13, path: "test.cpp", text: "if" }
 { kind:  "whitespace", startLine:   13, endLine:   13, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:   13, endLine:   13, path: "test.cpp", text: "=" }
-{ kind:  "whitespace", startLine:   13, endLine:   13, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:   13, endLine:   13, path: "test.cpp", text: "(" }
-{ kind: "punctuation", startLine:   13, endLine:   13, path: "test.cpp", text: "-" }
-{ kind:  "identifier", startLine:   13, endLine:   13, path: "test.cpp", text: "b" }
-{ kind:  "whitespace", startLine:   13, endLine:   13, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:   13, endLine:   13, path: "test.cpp", text: "+" }
-{ kind:  "whitespace", startLine:   13, endLine:   13, path: "test.cpp", text: " " }
-{ kind:  "identifier", startLine:   13, endLine:   13, path: "test.cpp", text: "sqrt" }
 { kind: "punctuation", startLine:   13, endLine:   13, path: "test.cpp", text: "(" }
 { kind:  "identifier", startLine:   13, endLine:   13, path: "test.cpp", text: "discriminant" }
+{ kind:  "whitespace", startLine:   13, endLine:   13, path: "test.cpp", text: " " }
+{ kind: "punctuation", startLine:   13, endLine:   13, path: "test.cpp", text: ">" }
+{ kind:  "whitespace", startLine:   13, endLine:   13, path: "test.cpp", text: " " }
+{ kind:      "number", startLine:   13, endLine:   13, path: "test.cpp", text: "0" }
 { kind: "punctuation", startLine:   13, endLine:   13, path: "test.cpp", text: ")" }
-{ kind: "punctuation", startLine:   13, endLine:   13, path: "test.cpp", text: ")" }
 { kind:  "whitespace", startLine:   13, endLine:   13, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:   13, endLine:   13, path: "test.cpp", text: "/" }
-{ kind:  "whitespace", startLine:   13, endLine:   13, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:   13, endLine:   13, path: "test.cpp", text: "(" }
-{ kind:      "number", startLine:   13, endLine:   13, path: "test.cpp", text: "2" }
-{ kind:  "whitespace", startLine:   13, endLine:   13, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:   13, endLine:   13, path: "test.cpp", text: "*" }
-{ kind:  "whitespace", startLine:   13, endLine:   13, path: "test.cpp", text: " " }
-{ kind:  "identifier", startLine:   13, endLine:   13, path: "test.cpp", text: "a" }
-{ kind: "punctuation", startLine:   13, endLine:   13, path: "test.cpp", text: ")" }
-{ kind: "punctuation", startLine:   13, endLine:   13, path: "test.cpp", text: ";" }
+{ kind: "punctuation", startLine:   13, endLine:   13, path: "test.cpp", text: "{" }
 { kind:  "whitespace", startLine:   13, endLine:   14, path: "test.cpp", text: "\n        " }
-{ kind:  "identifier", startLine:   14, endLine:   14, path: "test.cpp", text: "root2" }
+{ kind:  "identifier", startLine:   14, endLine:   14, path: "test.cpp", text: "root1" }
 { kind:  "whitespace", startLine:   14, endLine:   14, path: "test.cpp", text: " " }
 { kind: "punctuation", startLine:   14, endLine:   14, path: "test.cpp", text: "=" }
 { kind:  "whitespace", startLine:   14, endLine:   14, path: "test.cpp", text: " " }
@@ -133,7 +106,7 @@
 { kind: "punctuation", startLine:   14, endLine:   14, path: "test.cpp", text: "-" }
 { kind:  "identifier", startLine:   14, endLine:   14, path: "test.cpp", text: "b" }
 { kind:  "whitespace", startLine:   14, endLine:   14, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:   14, endLine:   14, path: "test.cpp", text: "-" }
+{ kind: "punctuation", startLine:   14, endLine:   14, path: "test.cpp", text: "+" }
 { kind:  "whitespace", startLine:   14, endLine:   14, path: "test.cpp", text: " " }
 { kind:  "identifier", startLine:   14, endLine:   14, path: "test.cpp", text: "sqrt" }
 { kind: "punctuation", startLine:   14, endLine:   14, path: "test.cpp", text: "(" }
@@ -152,102 +125,108 @@
 { kind: "punctuation", startLine:   14, endLine:   14, path: "test.cpp", text: ")" }
 { kind: "punctuation", startLine:   14, endLine:   14, path: "test.cpp", text: ";" }
 { kind:  "whitespace", startLine:   14, endLine:   15, path: "test.cpp", text: "\n        " }
-{ kind:  "identifier", startLine:   15, endLine:   15, path: "test.cpp", text: "printf" }
-{ kind: "punctuation", startLine:   15, endLine:   15, path: "test.cpp", text: "(" }
-{ kind:      "string", startLine:   15, endLine:   15, path: "test.cpp", text: "\"root1 = %.2lf and root2 = %.2lf\"" }
-{ kind: "punctuation", startLine:   15, endLine:   15, path: "test.cpp", text: "," }
-{ kind:  "whitespace", startLine:   15, endLine:   15, path: "test.cpp", text: " " }
-{ kind:  "identifier", startLine:   15, endLine:   15, path: "test.cpp", text: "root1" }
-{ kind: "punctuation", startLine:   15, endLine:   15, path: "test.cpp", text: "," }
-{ kind:  "whitespace", startLine:   15, endLine:   15, path: "test.cpp", text: " " }
 { kind:  "identifier", startLine:   15, endLine:   15, path: "test.cpp", text: "root2" }
+{ kind:  "whitespace", startLine:   15, endLine:   15, path: "test.cpp", text: " " }
+{ kind: "punctuation", startLine:   15, endLine:   15, path: "test.cpp", text: "=" }
+{ kind:  "whitespace", startLine:   15, endLine:   15, path: "test.cpp", text: " " }
+{ kind: "punctuation", startLine:   15, endLine:   15, path: "test.cpp", text: "(" }
+{ kind: "punctuation", startLine:   15, endLine:   15, path: "test.cpp", text: "-" }
+{ kind:  "identifier", startLine:   15, endLine:   15, path: "test.cpp", text: "b" }
+{ kind:  "whitespace", startLine:   15, endLine:   15, path: "test.cpp", text: " " }
+{ kind: "punctuation", startLine:   15, endLine:   15, path: "test.cpp", text: "-" }
+{ kind:  "whitespace", startLine:   15, endLine:   15, path: "test.cpp", text: " " }
+{ kind:  "identifier", startLine:   15, endLine:   15, path: "test.cpp", text: "sqrt" }
+{ kind: "punctuation", startLine:   15, endLine:   15, path: "test.cpp", text: "(" }
+{ kind:  "identifier", startLine:   15, endLine:   15, path: "test.cpp", text: "discriminant" }
+{ kind: "punctuation", startLine:   15, endLine:   15, path: "test.cpp", text: ")" }
+{ kind: "punctuation", startLine:   15, endLine:   15, path: "test.cpp", text: ")" }
+{ kind:  "whitespace", startLine:   15, endLine:   15, path: "test.cpp", text: " " }
+{ kind: "punctuation", startLine:   15, endLine:   15, path: "test.cpp", text: "/" }
+{ kind:  "whitespace", startLine:   15, endLine:   15, path: "test.cpp", text: " " }
+{ kind: "punctuation", startLine:   15, endLine:   15, path: "test.cpp", text: "(" }
+{ kind:      "number", startLine:   15, endLine:   15, path: "test.cpp", text: "2" }
+{ kind:  "whitespace", startLine:   15, endLine:   15, path: "test.cpp", text: " " }
+{ kind: "punctuation", startLine:   15, endLine:   15, path: "test.cpp", text: "*" }
+{ kind:  "whitespace", startLine:   15, endLine:   15, path: "test.cpp", text: " " }
+{ kind:  "identifier", startLine:   15, endLine:   15, path: "test.cpp", text: "a" }
 { kind: "punctuation", startLine:   15, endLine:   15, path: "test.cpp", text: ")" }
 { kind: "punctuation", startLine:   15, endLine:   15, path: "test.cpp", text: ";" }
-{ kind:  "whitespace", startLine:   15, endLine:   16, path: "test.cpp", text: "\n    " }
-{ kind: "punctuation", startLine:   16, endLine:   16, path: "test.cpp", text: "}" }
-{ kind:  "whitespace", startLine:   16, endLine:   18, path: "test.cpp", text: "\n\n    " }
-{ kind:     "comment", startLine:   18, endLine:   18, path: "test.cpp", text: "// condition for real and equal roots" }
-{ kind:  "whitespace", startLine:   18, endLine:   19, path: "test.cpp", text: "\n    " }
-{ kind:  "identifier", startLine:   19, endLine:   19, path: "test.cpp", text: "else" }
-{ kind:  "whitespace", startLine:   19, endLine:   19, path: "test.cpp", text: " " }
-{ kind:  "identifier", startLine:   19, endLine:   19, path: "test.cpp", text: "if" }
-{ kind:  "whitespace", startLine:   19, endLine:   19, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:   19, endLine:   19, path: "test.cpp", text: "(" }
-{ kind:  "identifier", startLine:   19, endLine:   19, path: "test.cpp", text: "discriminant" }
-{ kind:  "whitespace", startLine:   19, endLine:   19, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:   19, endLine:   19, path: "test.cpp", text: "==" }
-{ kind:  "whitespace", startLine:   19, endLine:   19, path: "test.cpp", text: " " }
-{ kind:      "number", startLine:   19, endLine:   19, path: "test.cpp", text: "0" }
-{ kind: "punctuation", startLine:   19, endLine:   19, path: "test.cpp", text: ")" }
-{ kind:  "whitespace", startLine:   19, endLine:   19, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:   19, endLine:   19, path: "test.cpp", text: "{" }
-{ kind:  "whitespace", startLine:   19, endLine:   20, path: "test.cpp", text: "\n        " }
-{ kind:  "identifier", startLine:   20, endLine:   20, path: "test.cpp", text: "root1" }
+{ kind:  "whitespace", startLine:   15, endLine:   16, path: "test.cpp", text: "\n        " }
+{ kind:  "identifier", startLine:   16, endLine:   16, path: "test.cpp", text: "printf" }
+{ kind: "punctuation", startLine:   16, endLine:   16, path: "test.cpp", text: "(" }
+{ kind:      "string", startLine:   16, endLine:   16, path: "test.cpp", text: "\"root1 = %.2lf and root2 = %.2lf\"" }
+{ kind: "punctuation", startLine:   16, endLine:   16, path: "test.cpp", text: "," }
+{ kind:  "whitespace", startLine:   16, endLine:   16, path: "test.cpp", text: " " }
+{ kind:  "identifier", startLine:   16, endLine:   16, path: "test.cpp", text: "root1" }
+{ kind: "punctuation", startLine:   16, endLine:   16, path: "test.cpp", text: "," }
+{ kind:  "whitespace", startLine:   16, endLine:   16, path: "test.cpp", text: " " }
+{ kind:  "identifier", startLine:   16, endLine:   16, path: "test.cpp", text: "root2" }
+{ kind: "punctuation", startLine:   16, endLine:   16, path: "test.cpp", text: ")" }
+{ kind: "punctuation", startLine:   16, endLine:   16, path: "test.cpp", text: ";" }
+{ kind:  "whitespace", startLine:   16, endLine:   17, path: "test.cpp", text: "\n    " }
+{ kind: "punctuation", startLine:   17, endLine:   17, path: "test.cpp", text: "}" }
+{ kind:  "whitespace", startLine:   17, endLine:   19, path: "test.cpp", text: "\n\n    " }
+{ kind:     "comment", startLine:   19, endLine:   19, path: "test.cpp", text: "// condition for real and equal roots" }
+{ kind:  "whitespace", startLine:   19, endLine:   20, path: "test.cpp", text: "\n    " }
+{ kind:  "identifier", startLine:   20, endLine:   20, path: "test.cpp", text: "else" }
 { kind:  "whitespace", startLine:   20, endLine:   20, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:   20, endLine:   20, path: "test.cpp", text: "=" }
-{ kind:  "whitespace", startLine:   20, endLine:   20, path: "test.cpp", text: " " }
-{ kind:  "identifier", startLine:   20, endLine:   20, path: "test.cpp", text: "root2" }
-{ kind:  "whitespace", startLine:   20, endLine:   20, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:   20, endLine:   20, path: "test.cpp", text: "=" }
-{ kind:  "whitespace", startLine:   20, endLine:   20, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:   20, endLine:   20, path: "test.cpp", text: "-" }
-{ kind:  "identifier", startLine:   20, endLine:   20, path: "test.cpp", text: "b" }
-{ kind:  "whitespace", startLine:   20, endLine:   20, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:   20, endLine:   20, path: "test.cpp", text: "/" }
+{ kind:  "identifier", startLine:   20, endLine:   20, path: "test.cpp", text: "if" }
 { kind:  "whitespace", startLine:   20, endLine:   20, path: "test.cpp", text: " " }
 { kind: "punctuation", startLine:   20, endLine:   20, path: "test.cpp", text: "(" }
-{ kind:      "number", startLine:   20, endLine:   20, path: "test.cpp", text: "2" }
+{ kind:  "identifier", startLine:   20, endLine:   20, path: "test.cpp", text: "discriminant" }
 { kind:  "whitespace", startLine:   20, endLine:   20, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:   20, endLine:   20, path: "test.cpp", text: "*" }
+{ kind: "punctuation", startLine:   20, endLine:   20, path: "test.cpp", text: "==" }
 { kind:  "whitespace", startLine:   20, endLine:   20, path: "test.cpp", text: " " }
-{ kind:  "identifier", startLine:   20, endLine:   20, path: "test.cpp", text: "a" }
+{ kind:      "number", startLine:   20, endLine:   20, path: "test.cpp", text: "0" }
 { kind: "punctuation", startLine:   20, endLine:   20, path: "test.cpp", text: ")" }
-{ kind: "punctuation", startLine:   20, endLine:   20, path: "test.cpp", text: ";" }
+{ kind:  "whitespace", startLine:   20, endLine:   20, path: "test.cpp", text: " " }
+{ kind: "punctuation", startLine:   20, endLine:   20, path: "test.cpp", text: "{" }
 { kind:  "whitespace", startLine:   20, endLine:   21, path: "test.cpp", text: "\n        " }
-{ kind:  "identifier", startLine:   21, endLine:   21, path: "test.cpp", text: "printf" }
-{ kind: "punctuation", startLine:   21, endLine:   21, path: "test.cpp", text: "(" }
-{ kind:      "string", startLine:   21, endLine:   21, path: "test.cpp", text: "\"root1 = root2 = %.2lf;\"" }
-{ kind: "punctuation", startLine:   21, endLine:   21, path: "test.cpp", text: "," }
-{ kind:  "whitespace", startLine:   21, endLine:   21, path: "test.cpp", text: " " }
 { kind:  "identifier", startLine:   21, endLine:   21, path: "test.cpp", text: "root1" }
+{ kind:  "whitespace", startLine:   21, endLine:   21, path: "test.cpp", text: " " }
+{ kind: "punctuation", startLine:   21, endLine:   21, path: "test.cpp", text: "=" }
+{ kind:  "whitespace", startLine:   21, endLine:   21, path: "test.cpp", text: " " }
+{ kind:  "identifier", startLine:   21, endLine:   21, path: "test.cpp", text: "root2" }
+{ kind:  "whitespace", startLine:   21, endLine:   21, path: "test.cpp", text: " " }
+{ kind: "punctuation", startLine:   21, endLine:   21, path: "test.cpp", text: "=" }
+{ kind:  "whitespace", startLine:   21, endLine:   21, path: "test.cpp", text: " " }
+{ kind: "punctuation", startLine:   21, endLine:   21, path: "test.cpp", text: "-" }
+{ kind:  "identifier", startLine:   21, endLine:   21, path: "test.cpp", text: "b" }
+{ kind:  "whitespace", startLine:   21, endLine:   21, path: "test.cpp", text: " " }
+{ kind: "punctuation", startLine:   21, endLine:   21, path: "test.cpp", text: "/" }
+{ kind:  "whitespace", startLine:   21, endLine:   21, path: "test.cpp", text: " " }
+{ kind: "punctuation", startLine:   21, endLine:   21, path: "test.cpp", text: "(" }
+{ kind:      "number", startLine:   21, endLine:   21, path: "test.cpp", text: "2" }
+{ kind:  "whitespace", startLine:   21, endLine:   21, path: "test.cpp", text: " " }
+{ kind: "punctuation", startLine:   21, endLine:   21, path: "test.cpp", text: "*" }
+{ kind:  "whitespace", startLine:   21, endLine:   21, path: "test.cpp", text: " " }
+{ kind:  "identifier", startLine:   21, endLine:   21, path: "test.cpp", text: "a" }
 { kind: "punctuation", startLine:   21, endLine:   21, path: "test.cpp", text: ")" }
 { kind: "punctuation", startLine:   21, endLine:   21, path: "test.cpp", text: ";" }
-{ kind:  "whitespace", startLine:   21, endLine:   22, path: "test.cpp", text: "\n    " }
-{ kind: "punctuation", startLine:   22, endLine:   22, path: "test.cpp", text: "}" }
-{ kind:  "whitespace", startLine:   22, endLine:   24, path: "test.cpp", text: "\n\n    " }
-{ kind:     "comment", startLine:   24, endLine:   24, path: "test.cpp", text: "// if roots are not real" }
-{ kind:  "whitespace", startLine:   24, endLine:   25, path: "test.cpp", text: "\n    " }
-{ kind:  "identifier", startLine:   25, endLine:   25, path: "test.cpp", text: "else" }
-{ kind:  "whitespace", startLine:   25, endLine:   25, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:   25, endLine:   25, path: "test.cpp", text: "{" }
-{ kind:  "whitespace", startLine:   25, endLine:   26, path: "test.cpp", text: "\n        " }
-{ kind:  "identifier", startLine:   26, endLine:   26, path: "test.cpp", text: "realPart" }
+{ kind:  "whitespace", startLine:   21, endLine:   22, path: "test.cpp", text: "\n        " }
+{ kind:  "identifier", startLine:   22, endLine:   22, path: "test.cpp", text: "printf" }
+{ kind: "punctuation", startLine:   22, endLine:   22, path: "test.cpp", text: "(" }
+{ kind:      "string", startLine:   22, endLine:   22, path: "test.cpp", text: "\"root1 = root2 = %.2lf;\"" }
+{ kind: "punctuation", startLine:   22, endLine:   22, path: "test.cpp", text: "," }
+{ kind:  "whitespace", startLine:   22, endLine:   22, path: "test.cpp", text: " " }
+{ kind:  "identifier", startLine:   22, endLine:   22, path: "test.cpp", text: "root1" }
+{ kind: "punctuation", startLine:   22, endLine:   22, path: "test.cpp", text: ")" }
+{ kind: "punctuation", startLine:   22, endLine:   22, path: "test.cpp", text: ";" }
+{ kind:  "whitespace", startLine:   22, endLine:   23, path: "test.cpp", text: "\n    " }
+{ kind: "punctuation", startLine:   23, endLine:   23, path: "test.cpp", text: "}" }
+{ kind:  "whitespace", startLine:   23, endLine:   25, path: "test.cpp", text: "\n\n    " }
+{ kind:     "comment", startLine:   25, endLine:   25, path: "test.cpp", text: "// if roots are not real" }
+{ kind:  "whitespace", startLine:   25, endLine:   26, path: "test.cpp", text: "\n    " }
+{ kind:  "identifier", startLine:   26, endLine:   26, path: "test.cpp", text: "else" }
 { kind:  "whitespace", startLine:   26, endLine:   26, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:   26, endLine:   26, path: "test.cpp", text: "=" }
-{ kind:  "whitespace", startLine:   26, endLine:   26, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:   26, endLine:   26, path: "test.cpp", text: "-" }
-{ kind:  "identifier", startLine:   26, endLine:   26, path: "test.cpp", text: "b" }
-{ kind:  "whitespace", startLine:   26, endLine:   26, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:   26, endLine:   26, path: "test.cpp", text: "/" }
-{ kind:  "whitespace", startLine:   26, endLine:   26, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:   26, endLine:   26, path: "test.cpp", text: "(" }
-{ kind:      "number", startLine:   26, endLine:   26, path: "test.cpp", text: "2" }
-{ kind:  "whitespace", startLine:   26, endLine:   26, path: "test.cpp", text: " " }
-{ kind: "punctuation", startLine:   26, endLine:   26, path: "test.cpp", text: "*" }
-{ kind:  "whitespace", startLine:   26, endLine:   26, path: "test.cpp", text: " " }
-{ kind:  "identifier", startLine:   26, endLine:   26, path: "test.cpp", text: "a" }
-{ kind: "punctuation", startLine:   26, endLine:   26, path: "test.cpp", text: ")" }
-{ kind: "punctuation", startLine:   26, endLine:   26, path: "test.cpp", text: ";" }
+{ kind: "punctuation", startLine:   26, endLine:   26, path: "test.cpp", text: "{" }
 { kind:  "whitespace", startLine:   26, endLine:   27, path: "test.cpp", text: "\n        " }
-{ kind:  "identifier", startLine:   27, endLine:   27, path: "test.cpp", text: "imagPart" }
+{ kind:  "identifier", startLine:   27, endLine:   27, path: "test.cpp", text: "realPart" }
 { kind:  "whitespace", startLine:   27, endLine:   27, path: "test.cpp", text: " " }
 { kind: "punctuation", startLine:   27, endLine:   27, path: "test.cpp", text: "=" }
 { kind:  "whitespace", startLine:   27, endLine:   27, path: "test.cpp", text: " " }
-{ kind:  "identifier", startLine:   27, endLine:   27, path: "test.cpp", text: "sqrt" }
-{ kind: "punctuation", startLine:   27, endLine:   27, path: "test.cpp", text: "(" }
 { kind: "punctuation", startLine:   27, endLine:   27, path: "test.cpp", text: "-" }
-{ kind:  "identifier", startLine:   27, endLine:   27, path: "test.cpp", text: "discriminant" }
-{ kind: "punctuation", startLine:   27, endLine:   27, path: "test.cpp", text: ")" }
+{ kind:  "identifier", startLine:   27, endLine:   27, path: "test.cpp", text: "b" }
 { kind:  "whitespace", startLine:   27, endLine:   27, path: "test.cpp", text: " " }
 { kind: "punctuation", startLine:   27, endLine:   27, path: "test.cpp", text: "/" }
 { kind:  "whitespace", startLine:   27, endLine:   27, path: "test.cpp", text: " " }
@@ -260,30 +239,51 @@
 { kind: "punctuation", startLine:   27, endLine:   27, path: "test.cpp", text: ")" }
 { kind: "punctuation", startLine:   27, endLine:   27, path: "test.cpp", text: ";" }
 { kind:  "whitespace", startLine:   27, endLine:   28, path: "test.cpp", text: "\n        " }
-{ kind:  "identifier", startLine:   28, endLine:   28, path: "test.cpp", text: "printf" }
+{ kind:  "identifier", startLine:   28, endLine:   28, path: "test.cpp", text: "imagPart" }
+{ kind:  "whitespace", startLine:   28, endLine:   28, path: "test.cpp", text: " " }
+{ kind: "punctuation", startLine:   28, endLine:   28, path: "test.cpp", text: "=" }
+{ kind:  "whitespace", startLine:   28, endLine:   28, path: "test.cpp", text: " " }
+{ kind:  "identifier", startLine:   28, endLine:   28, path: "test.cpp", text: "sqrt" }
 { kind: "punctuation", startLine:   28, endLine:   28, path: "test.cpp", text: "(" }
-{ kind:      "string", startLine:   28, endLine:   28, path: "test.cpp", text: "\"root1 = %.2lf+%.2lfi and root2 = %.2f-%.2fi\"" }
-{ kind: "punctuation", startLine:   28, endLine:   28, path: "test.cpp", text: "," }
+{ kind: "punctuation", startLine:   28, endLine:   28, path: "test.cpp", text: "-" }
+{ kind:  "identifier", startLine:   28, endLine:   28, path: "test.cpp", text: "discriminant" }
+{ kind: "punctuation", startLine:   28, endLine:   28, path: "test.cpp", text: ")" }
 { kind:  "whitespace", startLine:   28, endLine:   28, path: "test.cpp", text: " " }
-{ kind:  "identifier", startLine:   28, endLine:   28, path: "test.cpp", text: "realPart" }
-{ kind: "punctuation", startLine:   28, endLine:   28, path: "test.cpp", text: "," }
+{ kind: "punctuation", startLine:   28, endLine:   28, path: "test.cpp", text: "/" }
 { kind:  "whitespace", startLine:   28, endLine:   28, path: "test.cpp", text: " " }
-{ kind:  "identifier", startLine:   28, endLine:   28, path: "test.cpp", text: "imagPart" }
-{ kind: "punctuation", startLine:   28, endLine:   28, path: "test.cpp", text: "," }
+{ kind: "punctuation", startLine:   28, endLine:   28, path: "test.cpp", text: "(" }
+{ kind:      "number", startLine:   28, endLine:   28, path: "test.cpp", text: "2" }
 { kind:  "whitespace", startLine:   28, endLine:   28, path: "test.cpp", text: " " }
-{ kind:  "identifier", startLine:   28, endLine:   28, path: "test.cpp", text: "realPart" }
-{ kind: "punctuation", startLine:   28, endLine:   28, path: "test.cpp", text: "," }
+{ kind: "punctuation", startLine:   28, endLine:   28, path: "test.cpp", text: "*" }
 { kind:  "whitespace", startLine:   28, endLine:   28, path: "test.cpp", text: " " }
-{ kind:  "identifier", startLine:   28, endLine:   28, path: "test.cpp", text: "imagPart" }
+{ kind:  "identifier", startLine:   28, endLine:   28, path: "test.cpp", text: "a" }
 { kind: "punctuation", startLine:   28, endLine:   28, path: "test.cpp", text: ")" }
 { kind: "punctuation", startLine:   28, endLine:   28, path: "test.cpp", text: ";" }
-{ kind:  "whitespace", startLine:   28, endLine:   29, path: "test.cpp", text: "\n    " }
-{ kind: "punctuation", startLine:   29, endLine:   29, path: "test.cpp", text: "}" }
-{ kind:  "whitespace", startLine:   29, endLine:   31, path: "test.cpp", text: "\n\n    " }
-{ kind:  "identifier", startLine:   31, endLine:   31, path: "test.cpp", text: "return" }
-{ kind:  "whitespace", startLine:   31, endLine:   31, path: "test.cpp", text: " " }
-{ kind:      "number", startLine:   31, endLine:   31, path: "test.cpp", text: "0" }
-{ kind: "punctuation", startLine:   31, endLine:   31, path: "test.cpp", text: ";" }
-{ kind:  "whitespace", startLine:   31, endLine:   32, path: "test.cpp", text: "\n" }
-{ kind: "punctuation", startLine:   32, endLine:   32, path: "test.cpp", text: "}" }
-{ kind:  "whitespace", startLine:   32, endLine:   33, path: "test.cpp", text: " \n" }
+{ kind:  "whitespace", startLine:   28, endLine:   29, path: "test.cpp", text: "\n        " }
+{ kind:  "identifier", startLine:   29, endLine:   29, path: "test.cpp", text: "printf" }
+{ kind: "punctuation", startLine:   29, endLine:   29, path: "test.cpp", text: "(" }
+{ kind:      "string", startLine:   29, endLine:   29, path: "test.cpp", text: "\"root1 = %.2lf+%.2lfi and root2 = %.2f-%.2fi\"" }
+{ kind: "punctuation", startLine:   29, endLine:   29, path: "test.cpp", text: "," }
+{ kind:  "whitespace", startLine:   29, endLine:   29, path: "test.cpp", text: " " }
+{ kind:  "identifier", startLine:   29, endLine:   29, path: "test.cpp", text: "realPart" }
+{ kind: "punctuation", startLine:   29, endLine:   29, path: "test.cpp", text: "," }
+{ kind:  "whitespace", startLine:   29, endLine:   29, path: "test.cpp", text: " " }
+{ kind:  "identifier", startLine:   29, endLine:   29, path: "test.cpp", text: "imagPart" }
+{ kind: "punctuation", startLine:   29, endLine:   29, path: "test.cpp", text: "," }
+{ kind:  "whitespace", startLine:   29, endLine:   29, path: "test.cpp", text: " " }
+{ kind:  "identifier", startLine:   29, endLine:   29, path: "test.cpp", text: "realPart" }
+{ kind: "punctuation", startLine:   29, endLine:   29, path: "test.cpp", text: "," }
+{ kind:  "whitespace", startLine:   29, endLine:   29, path: "test.cpp", text: " " }
+{ kind:  "identifier", startLine:   29, endLine:   29, path: "test.cpp", text: "imagPart" }
+{ kind: "punctuation", startLine:   29, endLine:   29, path: "test.cpp", text: ")" }
+{ kind: "punctuation", startLine:   29, endLine:   29, path: "test.cpp", text: ";" }
+{ kind:  "whitespace", startLine:   29, endLine:   30, path: "test.cpp", text: "\n    " }
+{ kind: "punctuation", startLine:   30, endLine:   30, path: "test.cpp", text: "}" }
+{ kind:  "whitespace", startLine:   30, endLine:   32, path: "test.cpp", text: "\n\n    " }
+{ kind:  "identifier", startLine:   32, endLine:   32, path: "test.cpp", text: "return" }
+{ kind:  "whitespace", startLine:   32, endLine:   32, path: "test.cpp", text: " " }
+{ kind:      "number", startLine:   32, endLine:   32, path: "test.cpp", text: "0" }
+{ kind: "punctuation", startLine:   32, endLine:   32, path: "test.cpp", text: ";" }
+{ kind:  "whitespace", startLine:   32, endLine:   33, path: "test.cpp", text: "\n" }
+{ kind: "punctuation", startLine:   33, endLine:   33, path: "test.cpp", text: "}" }
+{ kind:  "whitespace", startLine:   33, endLine:   34, path: "test.cpp", text: " \n" }
