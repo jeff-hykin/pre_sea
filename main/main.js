@@ -1,13 +1,16 @@
 import { toRepresentation } from "https://deno.land/x/good@1.7.1.1/flattened/to_representation.js"
 import { escapeRegexMatch } from "https://deno.land/x/good@1.7.1.1/flattened/escape_regex_match.js"
 import { zipLong as zip } from "https://deno.land/x/good@1.9.0.0/flattened/zip_long.js"
-import { tokenize, kinds, numberPatternStart, Token } from "./tokenize.js"
+import { regex } from "https://deno.land/x/good@1.9.0.0/flattened/regex.js"
+import { tokenize, kinds, numberPatternStart, identifierPattern, Token } from "./tokenize.js"
 const Path = await import('https://deno.land/std@0.117.0/path/mod.ts')
 
 // next Tasks:
     // DONE: get #include working for relative paths
     // DONE: get #define working for object macros
     // DONE: get ifndef working
+    // DONE: get stringizing working
+    // test concat operator
     // test out nested macros and __LINE__
     // function macros
 
@@ -437,6 +440,7 @@ function handleConditionals(tokens, index) {
     return { endIndex: index2, map, kind: kinds.conditionalMap }
 }
 
+// this one takes a directive
 function evalCondition({text, objectMacros, functionMacros}) {
     text = text.replace(/\s*#\s*/g, '')
     if (text == 'else') {
@@ -452,13 +456,14 @@ function evalCondition({text, objectMacros, functionMacros}) {
         }
         return !!out
     } else if (match = text.match(/(?:el)?if\s*(.+)/)) {
-        return evalCondition(match[1])
+        return preprocessorEval(match[1])
     } else {
         throw Error(`Can't preprocessor-eval token: ${text}`)
     }
 }
 
-function preprocessorEval(string, objectMacros, functionMacros) {
+// this one takes a expression (not a directive)
+function preprocessorEval(string, objectMacros, functionMacros, specialMacros={}) {
     const condition = string.trim()
     if (condition.match(/^\d+$/)) { // yes this can match octal, but for a boolean check it doesn't matter
         return !!condition.match(/[1-9]/)
@@ -468,6 +473,83 @@ function preprocessorEval(string, objectMacros, functionMacros) {
         //       (it will definitely give junk results for invalid numbers (ex: 0x1.2))
         return !!baseNumber.match(/[1-9a-fA-F]/)
     }
+    
+    // if just one identifier
+    let match
+    if (match = string.match(regex`^\\s*(${identifierPattern})\\s*$`)) {
+        if (objectMacros[match[1]]) {
+            // FIXME: need to handle ## concats (could handle them in object-macro definition)
+            const expandedAsString = objectMacros[match[1]].map(each=>each.text).join("")
+            // no more expansions is equivlent to {},{},{} macros
+            return preprocessorEval(expandedAsString, {}, {}, {})
+        } else {
+            return false
+        }
+    }
+
+    // STEP 1: find all the "defined" usages and replace them with 1 or 0
+    string = string.replaceAll(/\bdefined\s*\(\s*(\w+)\s*\)/g, (matchText, macroName)=>{
+        if (objectMacros[macroName] || functionMacros[macroName] || specialMacros[macroName]) {
+            return ' 1 '
+        }
+        return ' 0 '
+    })
+    // STEP 2: then expand all macros, and convert all non-macro identifiers into 0
+    string = string.replaceAll(regex`\\b(${identifierPattern})(\\s+|\\b)(\\()?`.g, (matchText, macroName, space, paren)=>{
+        space = space || ""
+        if (objectMacros[macroName]) {
+            // FIXME: need to handle ## concats (could handle them in object-macro definition)
+            return objectMacros[match[1]].map(each=>each.text).join("").replace(/\s*##\s*/g, "") + space
+        }
+        if (specialMacros[macroName]) {
+            // FIXME: need a better way to apply this (ex: __LINE__ needs to know external stuff)
+            return specialMacros[macroName]() + space
+        }
+        if (functionMacros[macroName] && paren) {
+            // FIXME: need to handle ## concats (could handle them in object-macro definition)
+            throw Error(`Unimplemented: function macro expansion inside of #if`)
+        }
+        return ' 0 '
+    })
+    // STEP 3: then convert all the chars to ints
+    string = string.replaceAll(/'(\\[^']|')*'/, (matchText)=>{
+        // FIXME: this has multiple problems
+        return eval(matchText).charCodeAt(0)
+    })
+    // STEP 4: then eval
+    // FIXME: obvious multiple problems
+    return eval(string)
+
+    // operators: addition, subtraction, multiplication, division, bitwise operations, shifts, comparisons, and logical operations (&& and ||). The latter two obey the usual short-circuiting rules of standard C.
+        // +
+        // -
+        // *
+        // /
+        // &
+        // |
+        // ^
+        // <<
+        // >>
+        // <
+        // >
+        // <=
+        // >=
+        // ==
+        // !=
+        // &&
+        // ||
+    //      expression is a C expression of integer type, subject to stringent restrictions. It may contain
+    //     Integer constants.
+    //     Character constants, which are interpreted as they would be in normal code.
+    //     Arithmetic operators for addition, subtraction, multiplication, division, bitwise operations, shifts, comparisons, and logical operations (&& and ||). The latter two obey the usual short-circuiting rules of standard C.
+    //     Macros. All macros in the expression are expanded before actual computation of the expression's value begins.
+    //     Uses of the defined operator, which lets you check whether macros are defined in the middle of an `#if'.
+    //     Identifiers that are not macros, which are all considered to be the number zero. This allows you to write #if MACRO instead of #ifdef MACRO, if you know that MACRO, when defined, will always have a nonzero value. Function-like macros used without their function call parentheses are also treated as zero.
+    //     In some contexts this shortcut is undesirable. The `-Wundef' option causes GCC to warn whenever it encounters an identifier which is not a macro in an `#if'. 
+    // The preprocessor does not know anything about types in the language. Therefore, sizeof operators are not recognized in `#if', and neither are enum constants. They will be taken as identifiers which are not macros, and replaced by zero. In the case of sizeof, this is likely to cause the expression to be invalid.
+
+// The preprocessor calculates the value of expression. It carries out all calculations in the widest integer type known to the compiler; on most machines supported by GCC this is 64 bits. This is not the same rule as the compiler uses to calculate the value of a constant expression, and may give different results in some cases. If the value comes out to be nonzero, the `#if' succeeds and the controlled text is included; otherwise it is skipped. 
+
     throw Error(`Unimplemented #if/#elif`)
     // TODO full on eval machine with macro expansion
     // https://gcc.gnu.org/onlinedocs/cpp/If.html
