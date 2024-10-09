@@ -1,8 +1,15 @@
 import { escapeCString } from "./misc.js"
+// FIXME: path.basename changes depending on OS that this runs on. Which breaks the purity of the preprocessor
+import { Path } from "https://deno.land/std@0.117.0/path/mod.ts"
 
-export const hardcodedDefaults = {
+export const hardcodedDefaults = Object.freeze({
+    // NOTE: no particular reason for any of these at the moment
+    // NOTE2: frozen to prevent bad-hacks (these can all be changed by the user without mutating this object)
     __STDC_VERSION__: "201710L",
-}
+    __GNUC_MAJOR__: "4",
+    __GNUC_MINOR__: "2",
+    __GNUC_PATCHLEVEL__: "1",
+})
 export const standardSpecialMacros = {
     // see: https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html
     __FILE__(token, {sharedState, preprocessorOriginalArgs, tokens, tokenIndex, identifierTransformation}) {
@@ -94,6 +101,14 @@ export const commonMacros = {
             kind: kinds.string,
         })
     },
+    __FILE_NAME__(token, {sharedState, preprocessorOriginalArgs, tokens, tokenIndex, identifierTransformation}) {
+        // example: __FILE_NAME__ = "def25823.c"
+        return new Token({
+            ...token,
+            text: `"${escapeCString(Path.basename(preprocessorOriginalArgs.originFilePath))}"`,
+            kind: kinds.string,
+        })
+    },
     __COUNTER__(token, {sharedState, preprocessorOriginalArgs, tokens, tokenIndex, identifierTransformation}) {
         // example: __BASE_FILE__ = "/tmp/def25823.c"
         sharedState.counter = sharedState.counter || 0
@@ -103,5 +118,9 @@ export const commonMacros = {
             kind: kinds.number,
         })
     },
+    __GNUC__(...args) { return this.__GNUC_MAJOR__(...args) },
+    __GNUC_MAJOR__:(token)=>new Token({...token, text: hardcodedDefaults.__GNUC_MAJOR__, kind: kinds.number}),
+    __GNUC_MINOR__:(token)=>new Token({...token, text: hardcodedDefaults.__GNUC_MINOR__, kind: kinds.number}),
+    __GNUC_PATCHLEVEL__:(token)=>new Token({...token, text: hardcodedDefaults.__GNUC_PATCHLEVEL__, kind: kinds.number}),
     ...standardSpecialMacros,
 }

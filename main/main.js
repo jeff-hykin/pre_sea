@@ -5,7 +5,8 @@ import { regex } from "https://deno.land/x/good@1.9.0.0/flattened/regex.js"
 import { tokenize, kinds, numberPatternStart, identifierPattern, Token } from "./tokenize.js"
 import { commonMacros } from "./special_macros.js"
 import { escapeCString } from "./misc.js"
-const Path = await import('https://deno.land/std@0.117.0/path/mod.ts')
+// FIXME: path.basename changes depending on OS that this runs on. Which breaks the purity of the preprocessor
+import { Path } from "https://deno.land/std@0.117.0/path/mod.ts"
 
 // next Tasks:
     // DONE: get #include working for relative paths
