@@ -11,6 +11,10 @@ int main() {
     scanf("%lf %lf %lf", &a, &b, &c);
     PI;
     
+    #if 1 + 1 > 0
+        printf("I should be true");
+    #endif
+
     #ifdef PI
         __FILE__;
         printf("im in a conditional ");
@@ -18,8 +22,26 @@ int main() {
         printf("ITS A PROBLEM IF IM IN THE LOG FILE ");
     #endif
     
+    #ifndef PI
+        __FILE__;
+        printf("ITS A PROBLEM IF IM IN THE LOG FILE ");
+    #else
+        __FILE__;
+        printf("im in an else of a conditional ");
+    #endif
+    
+    #ifndef PI
+        __FILE__;
+        printf("ITS A PROBLEM IF IM IN THE LOG FILE ");
+    #elif 0
+        __FILE__;
+        printf("ITS A PROBLEM IF IM IN THE LOG FILE ");
+    #endif
+    
     #ifdef ALKJFLKASJDLASKJD
         printf("ITS A PROBLEM IF IM IN THE LOG FILE ");
+    #elif 0
+        printf("also would be a problem");
     #else
         printf("im in the #else of a conditional ");
     #endif
