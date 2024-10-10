@@ -14,26 +14,31 @@ import { dirname, } from "https://deno.land/std@0.117.0/path/mod.ts"
     // DONE: get ifndef working
     // DONE: get stringizing working
     // DONE: get a hack for #if defined() working
-    // make special macros an argument
+    // DONE: make special macros an argument
+    // DONE: all special and predefined macros for emcc on MacOS
+    // DONE: basic function macros
+    // DONE: #if with function macro expansion
+    // DONE: hacky #if with operators
+    // DONE: finish __FILE__, __LINE__
+    // DONE: __DATE__, __TIME__,
+    // DONE: __STDC__, __STDC_VERSION__, __STDC_HOSTED__, __ASSEMBLER__
+    // get a test suite
+        // get massive amount of .c and .h files from some test suite
+        // run gcc/clang -E on them
+        // strip out all the #line directives, and extra whitespace
     // test concat operator
-    // test out nested macros and __LINE__
-    // function macros
 
 // features todo:
     // #include<>
     // test macro function expansion basic args
-    // #if with function macro expansion
+    // test out nested macros and __LINE__
     // #if with __has_attribute()
-    // #if with operators
     // macro function expansion VARARGS
-    // finish __FILE__, __LINE__
-    // __DATE__, __TIME__,
-    // __STDC__, __STDC_VERSION__, __STDC_HOSTED__, __ASSEMBLER__
-    // #line markers
-    // pragma
-    // standard macros for gcc MacOS
-    // standard macros for gcc Linux
-    // embed
+    // fix infinite depth macro expansion
+    // #pragma
+    // attempt to generate #line markers
+    // proper #if with operators
+    // #embed
 
 const neutralKinds = new Set([ kinds.whitespace, kinds.number, kinds.comment, kinds.string, kinds.punctuation, kinds.other ])
 const plainTextKinds = new Set([ ...neutralKinds, kinds.identifier ])
@@ -287,12 +292,12 @@ export function* preprocess({
                     }
                     
                     // FIXME: check for varargs
-                    // then check for varargs
-                    // FIXME: expand/replace normal args
-                    // * I think then run another expansion pass on the output
-                    // unclear if concat can concat to a macro name that then gets expanded by the second pass
+                    // Q: unclear if concat can concat to a macro name that then gets expanded by the second pass
+                    // A: it can ... 🙃
                     tokens.splice(tokenIndex, tokensToSplice+1, ...bodyTokens)
-                    return bodyTokens.length
+                    return 1    // NOTE: normally we would return bodyTokens.length
+                                //        BUT we want to run another expansion pass on the output
+                                // FIXME: this could run recursively which is does not match the spec
                 }
             }
             
