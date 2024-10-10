@@ -226,7 +226,7 @@ export const standardSpecialMacros = {
 }
 export const commonMacros = {
     // all the non-standard hardcoded macros
-    ...(Object.fromEntries(Object.entries(defaultMacros).map(
+    ...(Object.fromEntries(Object.entries(hardcodedDefaults).map(
         ([name, value])=>{
             value = String(value)
             let kind = kinds.identifier
