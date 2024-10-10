@@ -398,30 +398,20 @@ export function* preprocess({
                             fullPath = `${dirname(token.path)}/${includeTarget}`
                             newString = getFile(fullPath)
                         } else if (angleIncludeTarget) {
-                            // FIXME: do the proper lookup 
-                            // newString = getFile(includeTarget)
-                            // fullPath = includeTarget
-                            
-                            // error if followed by non-comments
-                            // <name> note: can't escape>
-                            // check standard system folders
-                            // /usr/local/include
-                            // libdir/gcc/target/version/include
-                            // /usr/target/include
-                            // /usr/include
-                            // folders get prepended with -I 
-                            // target is the canonical name of the system GCC was configured to compile code for
-                            // For C++ programs, it will also look in /usr/include/g++-v3, first
-                            // You can prevent GCC from searching any of the default directories with the -nostdinc option
-                            // "name" also can't escape quote
-                            // check if exists as a relative to that file path (not relative to PWD)
-                            // then check if the file is used in the -iquote directories 
-                            // then check the same paths as <file>
-                            // read the file, ensure it ends with a new line, recurse with shared state, then resume
-
-                            throw Error(`Unimplemented angle include: ${token.text}`)
+                            const checkedPaths = []
+                            for (const eachSystemFolder of systemFolders) {
+                                try {
+                                    fullPath = `${eachSystemFolder}/${includeTarget}`
+                                    checkedPaths.push(fullPath)
+                                    newString = getFile(fullPath)
+                                    break
+                                } catch (error) {
+                                    
+                                }
+                            }
+                            throw Error(`Can't find file: ${token.text}`)
                         } else {
-                            throw Error(`Bad include directive: ${token.path}:${token.startLine}`)
+                            throw Error(`Bad include directive: ${token.path}\nfrom:${token.path}:${token.startLine}\nChecked the following paths:\n${checkedPaths.map(each=>`    ${JSON.stringify(each)}`).join("\n")}`)
                         }
                         if (!newString) {
                             throw Error(`Bad include directive: ${token.path}:${token.startLine}`)
