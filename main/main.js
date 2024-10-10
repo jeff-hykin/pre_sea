@@ -29,7 +29,7 @@ import { dirname, } from "https://deno.land/std@0.117.0/path/mod.ts"
     // test concat operator
 
 // features todo:
-    // #include<>
+    // test: #include<>
     // test macro function expansion basic args
     // test out nested macros and __LINE__
     // #if with __has_attribute()
