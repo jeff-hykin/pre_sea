@@ -1,4 +1,4 @@
-
+// standard:
 __FILE__                        // DONE
 __LINE__                        // DONE
 __DATE__                        // DONE
@@ -10,6 +10,28 @@ __cplusplus                     // DONE
 __OBJC__                        // DONE
 __ASSEMBLER__                   // DONE
 
+// emcc:
+_Pragma =
+__BASE_FILE__ = "/tmp/def40550.c"
+__COUNTER__ = 0
+__DATE__ = "Oct  9 2024"
+__FILE_NAME__ = "def40550.c"
+__FILE__ = "/tmp/def40550.c"
+__INCLUDE_LEVEL__ = 0
+__LINE__ = 25094
+__STDC_HOSTED__ = 1
+__STDC_UTF_16__ = 1
+__STDC_UTF_32__ = 1
+__STDC_VERSION__ = 201710L
+__STDC__ = 1
+__TIMESTAMP__ = "Wed Oct  9 18:54:12 2024"
+__TIME__ = "18:54:12"
+__has_attribute = 0
+__has_builtin = 0
+__has_c_attribute = 0
+__has_include = __has_include
+__has_include_next = __has_include_next
+
 // see: https://gcc.gnu.org/onlinedocs/cpp/macros/predefined-macros.html
 __COUNTER__                     // DONE 
 __GNUC__                        // apple clang (v14.0.0) has this macro set to 4 ... NOT 14, but 4 ... I have no idea why
@@ -19,12 +41,12 @@ __GNUG__
 __STRICT_ANSI__
 __BASE_FILE__                   // DONE
 __FILE_NAME__                   // DONE
-__INCLUDE_LEVEL__
+__INCLUDE_LEVEL__               // DONE
 __ELF__
-__VERSION__
-__OPTIMIZE__
-__OPTIMIZE_SIZE__
-__NO_INLINE__
+__VERSION__                     // TODO
+__OPTIMIZE__                    // probbaly never (only on if optimizing)
+__OPTIMIZE_SIZE__               // probbaly never (only on if optimizing)
+__NO_INLINE__                   // probbaly never (only on if optimizing)
 __GNUC_GNU_INLINE__
 __GNUC_STDC_INLINE__
 __CHAR_UNSIGNED__
