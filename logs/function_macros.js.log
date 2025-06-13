@@ -1,3 +1,6 @@
+Download https://esm.sh/gh/jeff-hykin/good-js@1.17.2.0/source/support/posix.js
+Download https://esm.sh/gh/jeff-hykin/good-js@4d52118/source/support/posix.js
+Download https://esm.sh/gh/jeff-hykin/good-js@4d52118/denonext/source/support/posix.mjs
 --  { kind:  "whitespace", startLine:    1, endLine:    2, path: "$PROJECT_ROOT/logs/test.cpp", text: "\n" }
 --  { kind:  "identifier", startLine:    2, endLine:    2, path: "$PROJECT_ROOT/logs/test.cpp", text: "int" }
 --  { kind:  "whitespace", startLine:    2, endLine:    2, path: "$PROJECT_ROOT/logs/test.cpp", text: " " }

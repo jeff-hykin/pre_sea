@@ -1,6 +1,5 @@
 import { escapeCString } from "./misc.js"
-// FIXME: path.basename changes depending on OS that this runs on. Which breaks the purity of the preprocessor
-import { basename, } from "https://deno.land/std@0.117.0/path/mod.ts"
+import { basename } from "https://esm.sh/gh/jeff-hykin/good-js@1.17.2.0/source/support/posix.js"
 import { tokenize, kinds, numberPatternStart, identifierPattern, Token } from "./tokenize.js"
 
 export const hardcodedDefaults = Object.freeze({
