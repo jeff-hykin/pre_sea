@@ -8,7 +8,7 @@ import { escapeCString } from "./misc.js"
 import { cCharToInt } from './tools/c_char_to_int.js' 
 import { cNumberStringToJsNumber } from './tools/c_number_string_to_js_number.js'
 // FIXME: path.basename changes depending on OS that this runs on. Which breaks the purity of the preprocessor
-import { dirname, } from "https://deno.land/std@0.117.0/path/mod.ts"
+import { dirname } from "https://esm.sh/gh/jeff-hykin/good-js@1.17.2.0/source/posix.js"
 
 // next Tasks:
     // DONE: get #include working for relative paths
@@ -24,6 +24,7 @@ import { dirname, } from "https://deno.land/std@0.117.0/path/mod.ts"
     // DONE: finish __FILE__, __LINE__
     // DONE: __DATE__, __TIME__,
     // DONE: __STDC__, __STDC_VERSION__, __STDC_HOSTED__, __ASSEMBLER__
+    // test: #include<>
     // get a test suite
         // get massive amount of .c and .h files from some test suite
         // run gcc/clang -E on them
@@ -31,7 +32,6 @@ import { dirname, } from "https://deno.land/std@0.117.0/path/mod.ts"
     // test concat operator
 
 // features todo:
-    // test: #include<>
     // test macro function expansion basic args
     // test out nested macros and __LINE__
     // #if with __has_attribute()
