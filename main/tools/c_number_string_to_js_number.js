@@ -12,6 +12,10 @@ export function cNumberStringToJsNumber(str) {
 
     // Remove all single quotes used as digit separators
     str = str.replace(/'/g, "")
+    // remove trailing cast to long or unsigned long, or C++ suffixes
+    str = str.replace(/(?:[UL]+|_\w+)$/, "")
+
+    // FIXME: scientific notation
 
     // Handle different number formats
     if (str.startsWith("0x") || str.startsWith("0X")) {
