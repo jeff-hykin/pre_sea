@@ -1,10 +1,13 @@
 // parses C character literals including escape sequences and returns integer value
 export function cCharToInt(str) {
-    // FIXME: this function has a lot of problems / edge cases
-    // Remove surrounding single quotes
-    str = str.slice(1, -1)
+    // handle cases like:
+        // L'a'
+        // u'a'
+        // U'a'
+        // u8'a'
+    str = str.match(/'(.*)'/s)[1]
     
-    // TODO: empty char case
+    // TODO: empty char case, better unicode escape checking
     
     // Handle escape sequences
     if (str.startsWith("\\")) {
