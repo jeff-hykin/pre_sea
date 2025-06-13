@@ -25,6 +25,7 @@ export { tokenize }
     // DONE: finish __FILE__, __LINE__
     // DONE: __DATE__, __TIME__,
     // DONE: __STDC__, __STDC_VERSION__, __STDC_HOSTED__, __ASSEMBLER__
+    // FIXME: theres a problem with nesting
     // test: #include<>
     // test concat operator
     // #if with __has_attribute()
@@ -42,14 +43,16 @@ export { tokenize }
     // attempt to generate #line markers
     // proper #if with operators
     // #embed
+    // why is "CPS     #0x1F       ;no effect in USR mode" allowed?
 
 const neutralKinds = new Set([ kinds.whitespace, kinds.number, kinds.comment, kinds.string, kinds.punctuation, kinds.other ])
 const plainTextKinds = new Set([ ...neutralKinds, kinds.identifier ])
 
 // the recursive one
 // mutates tokens array
+export let _debug = {} // FIXME: debugging only for now
 export function* preprocess({
-    tokens, 
+    tokens,
     getFile,
     specialMacros=commonMacros,
     
@@ -484,6 +487,7 @@ export function* preprocess({
             if (tokens[tokenIndex]?.kind == kinds.conditionalMap) {
                 throw Error(`This should never happen yielding a conditional map meta-token`)
             }
+            _debug._macros = { functionMacros, objectMacros }
             yield tokens[tokenIndex]
             tokenIndex += 1
         }
@@ -527,6 +531,7 @@ function handleConditionals(tokens, index) {
         }
     }
     console.warn(`unmatched #if/#endif at ${tokens[index].path}:${tokens[index].startLine}`)
+    console.debug(`map is:`,map)
     return { endIndex: index2, map, kind: kinds.conditionalMap }
 }
 

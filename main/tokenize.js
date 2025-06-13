@@ -23,8 +23,8 @@ export const directivePatternStart = /^[ \t]*#.+/
 export const whitespacePatternStart = /^[ \t\n\r]+/
 // number literal (straight from the spec)
 // "optional period, a required decimal digit, and then continue with any sequence of letters, digits, underscores, periods, and exponents. Exponents are the two-character sequences ‘e+’, ‘e-’, ‘E+’, ‘E-’, ‘p+’, ‘p-’, ‘P+’, and ‘P-’ "
-export const numberPattern = /\.?[0-9](?:[0-9a-zA-Z_\.]|[eEpP][-+])*/ // FIXME: check if single char literals are allowed as spacers
-export const numberPatternStart = /^\.?[0-9](?:[0-9a-zA-Z_\.]|[eEpP][-+])*/
+export const numberPattern = /#?\.?[0-9](?:[0-9a-zA-Z_\.]|[eEpP][-+])*/ // FIXME: check if single char literals are allowed as spacers
+export const numberPatternStart = /#?^\.?[0-9](?:[0-9a-zA-Z_\.]|[eEpP][-+])*/
 export const identifierPattern = /(?:[a-zA-Z_]|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})(?:[a-zA-Z0-9_]|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*/
 export const identifierPatternStart = /^(?:[a-zA-Z_]|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})(?:[a-zA-Z0-9_]|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*/
 export const macroStringizingIdentifierStart = /^#\s*(?:[a-zA-Z_]|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})(?:[a-zA-Z0-9_]|\\u[0-9a-fA-F]{4}|\\U[0-9a-fA-F]{8})*/
@@ -169,12 +169,15 @@ export const tokenize = ({string, path, startLine=1}) => {
         //
         let kind
         let match
-        if (match = string.match(directivePatternStart)) {
-            kind = kinds.directive
+        if (match = string.match(numberPatternStart)) {
+            if (match[0].startsWith("#")) {
+                console.debug(`match is:`,match)
+            }
+            kind = kinds.number
         } else if (match = string.match(whitespacePatternStart)) {
             kind = kinds.whitespace
-        } else if (match = string.match(numberPatternStart)) {
-            kind = kinds.number
+        } else if (match = string.match(directivePatternStart)) {
+            kind = kinds.directive
         } else if (match = string.match(commentPatternStart)) {
             kind = kinds.comment
         } else if (match = string.match(stringPatternStart) || string.match(charLiteralPatternStart)) {
