@@ -5,6 +5,7 @@ import { regex } from "https://deno.land/x/good@1.9.0.0/flattened/regex.js"
 import { tokenize, kinds, numberPatternStart, identifierPattern, Token } from "./tokenize.js"
 import { commonMacros } from "./special_macros.js"
 import { escapeCString } from "./misc.js"
+import { cCharToInt } from './tools/c_char_to_int.js' 
 // FIXME: path.basename changes depending on OS that this runs on. Which breaks the purity of the preprocessor
 import { dirname, } from "https://deno.land/std@0.117.0/path/mod.ts"
 
@@ -601,8 +602,7 @@ function preprocessorEval({string, conditionToken, objectMacros, functionMacros,
     // console.debug(`STEP 4: tokens is:`,tokens)
     tokens = tokens.map(
         each=>(
-                                                            // FIXME: this has many problems
-            (each.kind != kinds.string)   ?   each   :    new Token({...each,  kind: kinds.number, text: eval(each.text).charCodeAt(0)})
+            (each.kind != kinds.string)   ?   each   :    new Token({...each,  kind: kinds.number, text: cCharToInt(each.text) })
         )
     )
     // string = string.replaceAll(/'(\\[^']|')*'/g, (matchText)=>{
