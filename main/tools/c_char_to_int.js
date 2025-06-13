@@ -1,6 +1,6 @@
 // parses C character literals including escape sequences and returns integer value
 export function cCharToInt(str) {
-    // FIXME: this library has a lot of problems / edge cases
+    // FIXME: this function has a lot of problems / edge cases
     // Remove surrounding single quotes
     str = str.slice(1, -1)
     
