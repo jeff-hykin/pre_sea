@@ -6,6 +6,7 @@ import { tokenize, kinds, numberPatternStart, identifierPattern, Token } from ".
 import { commonMacros } from "./special_macros.js"
 import { escapeCString } from "./misc.js"
 import { cCharToInt } from './tools/c_char_to_int.js' 
+import { cNumberStringToJsNumber } from './tools/c_number_string_to_js_number.js'
 // FIXME: path.basename changes depending on OS that this runs on. Which breaks the purity of the preprocessor
 import { dirname, } from "https://deno.land/std@0.117.0/path/mod.ts"
 
@@ -598,20 +599,29 @@ function preprocessorEval({string, conditionToken, objectMacros, functionMacros,
             (each.kind != kinds.identifier)   ?   each   :    new Token({...each,  kind: kinds.number, text: "0"})
         )
     )
-    // STEP 4: then convert all the chars to ints
+
+    // STEP 4: purify the numbers
+    tokens = tokens.map(
+        each=>(
+            (each.kind != kinds.number)   ?   each   :    new Token({...each,  kind: kinds.number, text: cNumberStringToJsNumber(each.text) })
+        )
+    )
+
+    // STEP 5: then convert all the chars to ints
     // console.debug(`STEP 4: tokens is:`,tokens)
     tokens = tokens.map(
         each=>(
             (each.kind != kinds.string)   ?   each   :    new Token({...each,  kind: kinds.number, text: cCharToInt(each.text) })
         )
     )
+    
     // string = string.replaceAll(/'(\\[^']|')*'/g, (matchText)=>{
     //     // FIXME: this has multiple problems
     //     return eval(matchText).charCodeAt(0)
     // })
 
     // STEP 5: then eval
-    // FIXME: obvious multiple problems
+    // TODO: obvious multiple problems (ex: numbers can have single quotes as separators)
     const stringVal = tokens.map(each=>each.text).join("")
     return eval(stringVal)
 
