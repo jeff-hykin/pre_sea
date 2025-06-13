@@ -446,7 +446,7 @@ export function* preprocess({
                     // 
                     } else if (directive == 'pragma') {
                         throw Error(`Unimplemented (pragma) ${token.text}`)
-                        // FIXME: pragma
+                        // TODO: pragma
                     } else if (directive == 'embed') {
                         throw Error(`Unimplemented (embed) ${token.text}`)
                     } else if (directive == 'line') {
@@ -580,7 +580,7 @@ function preprocessorEval({string, conditionToken, objectMacros, functionMacros,
         return ' 0 '
     })
     
-    // TODO: special handling would be needed here for __has_attribute
+    // FIXME: special handling would be needed here for __has_attribute
     // STEP 2: then expand all macros
     // console.debug(`STEP 2: string is:`,string)
     let tokens = tokenize({ string, path: conditionToken.path, startLine: conditionToken.startLine })
@@ -615,11 +615,6 @@ function preprocessorEval({string, conditionToken, objectMacros, functionMacros,
         )
     )
     
-    // string = string.replaceAll(/'(\\[^']|')*'/g, (matchText)=>{
-    //     // FIXME: this has multiple problems
-    //     return eval(matchText).charCodeAt(0)
-    // })
-
     // STEP 5: then eval
     // TODO: obvious multiple problems (ex: numbers can have single quotes as separators)
     const stringVal = tokens.map(each=>each.text).join("")
@@ -655,7 +650,7 @@ function preprocessorEval({string, conditionToken, objectMacros, functionMacros,
 
 // The preprocessor calculates the value of expression. It carries out all calculations in the widest integer type known to the compiler; on most machines supported by GCC this is 64 bits. This is not the same rule as the compiler uses to calculate the value of a constant expression, and may give different results in some cases. If the value comes out to be nonzero, the `#if' succeeds and the controlled text is included; otherwise it is skipped. 
 
-    throw Error(`Unimplemented #if/#elif`)
+    throw Error(`Unimplemented #if/#elif evaluation`)
     // TODO full on eval machine with macro expansion
     // https://gcc.gnu.org/onlinedocs/cpp/If.html
 }
